@@ -1,3 +1,5 @@
+localconf.yml
+
 *.gem
 *.rbc
 /.config
