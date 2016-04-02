@@ -173,6 +173,26 @@ module Utilities
   end
 end
 
+module AudioClips
+  extend Discordrb::EventContainer
+
+  @@audio_clip_map = Hash[ Dir.glob('./content/audioclips/**/*.mp3').select{ |e| File.file? e }.map{ |e| [File.basename(e, ".*"), e] } ]
+
+  message(start_with: /\#/) do |event|
+    if event && event.user.voice_channel
+      clipname = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0]
+      if audio_clip_map.has_key? clipname
+        channel = event.user.voice_channel
+        voice = event.bot.voice_connect(channel)
+        old_volume = voice.volume
+        voice.volume = 0.5
+        voice.play_file audio_clip_map[clipname]
+        voice.volume = old_volume
+      end
+    end
+  end
+end
+
 module HelpText
   extend Discordrb::EventContainer
 
