@@ -184,7 +184,7 @@ module AudioClips
   message(start_with: /\#/) do |event|
     clipname = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0].downcase
     clip_exists = @@audio_clip_map.has_key? clipname
-    if event && event.user.voice_channel && .voice_connect(channel)
+    if event && event.user.voice_channel && clip_exists
       channel = event.user.voice_channel
       if channel != event.bot.bot_user.voice_channel
         event.bot.voice_connect(channel)
