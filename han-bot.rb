@@ -1,3 +1,4 @@
+require 'rbnacl/libsodium'
 require 'discordrb'
 require 'yaml'
 require 'net/http'
