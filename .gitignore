@@ -1,4 +1,5 @@
 localconf.yml
+pokemon-list.json
 
 *.gem
 *.rbc
