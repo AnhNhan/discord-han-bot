@@ -156,14 +156,16 @@ module Utilities
   ]
 
   def self.coin_phrase(val)
-    phrase = @@coin_phrases.sample
-    phrase = phrase.gsub "@@@@", val
-    return phrase
+    @@coin_phrases.sample.gsub /@@@@/, val
   end
 
   message(start_with: /\#flipcoin/i) do |event|
-    args = event.message.content.gsub /^\#help\s*/i
-    return self.coin_phrase(["Head", "Tail"].sample) unless args
+    args = event.message.content.scan(/^\#flipcoin['" \|]*(.*?)$/i)[0][0]
+    if args.length > 0
+      event.respond self.coin_phrase(args.split(/['" \|]+/).sample)
+    else
+      event.respond self.coin_phrase(["Head", "Tail"].sample)
+    end
   end
 end
 
@@ -171,13 +173,14 @@ module HelpText
   extend Discordrb::EventContainer
 
   message(with_text: /^!help$/i) do |event|
-    text = "**@HanBot Documentation Lite** (full version only available to creator\n\n"
+    text = "**@HanBot Documentation Lite** (full version only available to creator)\n"
     text += "**Pokédex**\n"
     text += "  _#pokedex <search term>_\n"
-    text += "    _<search term>_: Either the number of the Pokémon in the National-Dex, or its name in any of the following languages: German, English, French, Japanese, Korean (the last two also in its romanized variants).\n"
-    text += "                     @HanBot will do its best to find you the appropriate entry and send you a quick summary of the Pokémon in question, with further information available on the PokéWiki.\n\n"
+    text += "    _<search term>_: Either the number of the Pokémon in the National-Dex, or its name in any of the following languages:\n"
+    text += "                           German, English, French, Japanese, Korean (the last two also in its romanized variants).\n"
+    text += "                           @HanBot will do its best to find you the appropriate entry and send you a quick summary of the Pokémon in question, with further information available on the PokéWiki.\n"
     text += "**Game Announcer**\n"
-    text += "  @HanBot can announce possible games that can be played. Favorably when there are six people, then I will gladly suggest a round of Company of Heroes.\n\n"
+    text += "  @HanBot can announce possible games that can be played. Favorably when there are six people, then I will gladly suggest a round of Company of Heroes.\n"
     text += "**Utilities**\n"
     text += "  _#flipcoin [<head-label> [<tail-label>]]_\n"
     text += "    Flips a coin. You can pass alternative names for head and/or tail if you like to.\n"
@@ -214,6 +217,7 @@ bot.include! FutileResponses
 bot.include! GreetTheCommander
 bot.include! AnnouncePossibleGames
 bot.include! Pokedex
+bot.include! Utilities
 bot.include! HelpText
 
 bot.run
