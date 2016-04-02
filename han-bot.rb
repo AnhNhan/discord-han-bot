@@ -3,6 +3,7 @@ require 'yaml'
 require 'net/http'
 require 'uri'
 require 'json'
+require 'levenshtein'
 
 ###########################################################
 #### MODULES
@@ -71,6 +72,64 @@ module AnnouncePossibleGames
   end
 end
 
+module Pokedex
+  extend Discordrb::EventContainer
+
+  @@pokedex = JSON.parse(File.read("pokemon-list.json"))
+  @@name_search_indexes = [ "name_de", "name_en", "name_fr", "name_jp", "name_jpr", "name_kr", "name_krr" ]
+
+  def self.search_pokemon(query)
+    if query =~ /^\d+$/
+      # search by id
+      #
+      # strip all leading zeros and re-pad them later again
+      # this is necessary since the user might input too many zeroes
+      query = query.gsub /^0+/, ""
+      query = query.rjust(3, "0")
+      return pokedex.find{ |entry| query.eql? entry["id"] }
+    else
+      event.respond "Searching for Pokédex entries by name is not supported yet."
+      return nil
+      # disabled for now
+
+      # search by name
+      # slighty fuzzy search, not too fast, not too precise, pokemon with similar name may be mistaken
+      query = query.downcase.gsub /\s/, ""
+      puts "query is #{query}"
+      if !query
+        return nil
+      end
+
+      return @@pokedex.select do |entry|
+        return @@name_search_indexes.select do |index|
+          current_hayneedle = entry[index].downcase.gsub /\s/, ""
+          puts "current_hayneedle #{current_hayneedle}"
+          if !current_hayneedle
+            return true
+          end
+          if query.eql? current_hayneedle
+            return false
+          end
+          distance = Levenshtein.normalized_distance query, current_hayneedle
+          return distance >= query.length / 4
+        end
+      end
+    end
+  end
+
+  message(start_with: /\#pokedex\s+[^\s]/i) do |event|
+    query_string = event.message.content.scan(/\#pokedex\s+(.*?)\s*$/i)[0][0]
+    event.send_message query_string
+    search = self.search_pokemon(query_string)
+    if search
+      # ...
+      event.send_message "#{event.user.mention} #{search}"
+    else
+      event.send_message "#{event.user.mention} '#{query_string}' could not be found in the Pokédex."
+    end
+  end
+end
+
 ###########################################################
 #### MAIN
 ###########################################################
@@ -98,5 +157,6 @@ bot.include! GeneralAnnouncer
 bot.include! FutileResponses
 bot.include! GreetTheCommander
 bot.include! AnnouncePossibleGames
+bot.include! Pokedex
 
 bot.run
