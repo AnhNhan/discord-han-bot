@@ -56,7 +56,8 @@ module GreetTheCommander
     if event.server && "AnhNhan".eql?(event.user.name) && :online.eql?(event.status)
       weather_data = JSON.parse(Net::HTTP.get(@@weather_uri_ansbach))
       current_temp = weather_data["main"]["temp"]
-      event.server.general_channel.send_message "#{event.user.mention}\nWelcome back, commander!\nCurrent temperature is #{current_temp}°C.\nReactor online.\nSensors online.\nWeapons online.\nAll systems nominal.", true
+      # event.server.general_channel.send_message "#{event.user.mention}\nWelcome back, commander!\nCurrent temperature is #{current_temp}°C.\nReactor online.\nSensors online.\nWeapons online.\nAll systems nominal.", true
+      event.server.general_channel.send_message "#{event.user.mention}\nWillkommen zurück, Commander.\nDie derzeitige Temperatur beträgt #{current_temp}°C.\nReaktor online.\Sensoren online.\Waffensysteme online.\nAlle Systeme nominal.", true
     end
   end
 end
