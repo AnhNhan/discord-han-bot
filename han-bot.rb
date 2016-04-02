@@ -29,6 +29,7 @@ module FutileResponses
     "@@@@, there is no hope in talk with me.",
     "<@AnhNhan> do I seriously have to respond to every single message? Those people are annoying.",
     "@@@@ _(pretends to be silent)_",
+    "@@@@, I appreciate your attempt to communicate with me. But it is futile, for I am legion.",
     "I impersonate silence. I see no purpose in your action, @@@@."
   ]
 
@@ -43,6 +44,7 @@ module FutileResponses
   end
 
   pm do |event|
+    break unless event.message.content[0] =~ /[\#|!]/
     event.respond self.pick_random(event)
   end
 end
@@ -179,15 +181,20 @@ module AudioClips
   @@audio_clip_map = Hash[ Dir.glob('./content/audioclips/**/*.mp3').select{ |e| File.file? e }.map{ |e| [File.basename(e, ".*"), e] } ]
 
   message(start_with: /\#/) do |event|
+    clipname = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0].downcase
+    clip_exists = @@audio_clip_map.has_key? clipname
     if event && event.user.voice_channel
-      clipname = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0]
-      if @@audio_clip_map.has_key? clipname
+      if clip_exists
         channel = event.user.voice_channel
         voice = event.bot.voice_connect(channel)
         old_volume = voice.volume
         voice.volume = 0.5
         voice.play_file @@audio_clip_map[clipname]
         voice.volume = old_volume
+      end
+    else
+      if event && clip_exists
+        event.respond "#{event.user.mention} I'm sorry, you tried to play _#{clipname}_ but I could not find your current voice channel.\n_If you are already situated in one, please try re-joining, I'm not sure where the problem is exactly._"
       end
     end
   end
