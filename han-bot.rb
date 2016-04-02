@@ -114,7 +114,7 @@ module Pokedex
     #event.send_message query_string
     search = self.search_pokemon(query_string)
     if search
-      imageinfo_api_uri = URI("http://www.pokewiki.de/api.php?action=query&format=json&prop=imageinfo&titles=Datei:Sugimori_709.png&iiprop=url")
+      imageinfo_api_uri = URI("http://www.pokewiki.de/api.php?action=query&format=json&prop=imageinfo&titles=Datei:Sugimori_" + search["id"] + ".png&iiprop=url")
       imageinfo = JSON.parse(Net::HTTP.get(imageinfo_api_uri))
       imageurl = imageinfo["query"]["pages"].values[0]["imageinfo"][0]["url"]
 
