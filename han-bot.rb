@@ -27,6 +27,8 @@ module FutileResponses
   @@responses = [
     "@@@@, it is meaningless to converse with a soulless machine.",
     "@@@@, there is no hope in talk with me.",
+    "<@AnhNhan> do I seriously have to respond to every single message? Those people are annoying.",
+    "@@@@ _(pretends to be silent)_",
     "I impersonate silence. I see no purpose in your action, @@@@."
   ]
 
@@ -152,6 +154,7 @@ module Utilities
     "My dice said **@@@@**.",
     "Sorry I was so fast, I lost my coin. It seems to be **@@@@**.",
     "**@@@@**.",
+    "For the n+1-th time, it's **@@@@**.",
     "***Sy*ste*m malfu*nct*ion. Pl*ease t*rqy aqqqgain.***"
   ]
 
