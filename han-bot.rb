@@ -200,6 +200,10 @@ module AudioClips
       end
     end
   end
+
+  message(content: "#audio-list") do |event|
+    event.send_message @@audio_clip_map.keys.map{ |k| "#" + k }.join("\n")
+  end
 end
 
 module HelpText
@@ -217,6 +221,9 @@ module HelpText
     text += "**Utilities**\n"
     text += "  _#flipcoin [<head-label> [<tail-label>]]_\n"
     text += "    Flips a coin. You can pass alternative names for head and/or tail if you like to.\n"
+    text += "**Audio Clips**\n"
+    text += "  _#audio-list_\n"
+    text += "    lists all audio clip names"
 
     event.send_message text
   end
