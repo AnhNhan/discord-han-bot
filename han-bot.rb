@@ -193,7 +193,7 @@ module AudioClips
         voice = event.bot.voice
         old_volume = voice.volume
         voice.volume = 0.5
-        voice.play_file @@audio_clip_map[clipname]
+        voice.play_io open(@@audio_clip_map[clipname])
         voice.volume = old_volume
       end
     else
