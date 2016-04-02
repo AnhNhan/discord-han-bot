@@ -23,13 +23,13 @@ pokemon_list_raw_text = pokemon_list_response["query"]["pages"]["2366"]["revisio
 
 puts "Retrieved list, processing now"
 
-pokemon_list_raw_text.split("\n").select{ |i| i[/^\|\s*\d+\s*\|\|/] }.each do |line|
+pokemon_list_raw_text.split("\n").select{ |i| i[/^\|\s*(<.*?>)?\s*\d+\s*\|\|/] }.each do |line|
   entry = {}
   column_index = 0
   line.split(/\s+\|+\s+/).map(&:chomp).select{ |i| i[/^(?!style=)/] }.each do |column|
     case column_index
       when 0
-        column.gsub! /\s|\|/, ""
+        column.gsub! /\s|\||<.*?>/, ""
         entry["id"] = column
       when 2
         column.gsub! /(^\[\[)|(\]\]$)/, ""
