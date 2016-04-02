@@ -24,14 +24,15 @@ end
 module FutileResponses
   extend Discordrb::EventContainer
 
+  @@responses = [
+    "@@@@, it is meaningless to converse with a soulless machine.",
+    "@@@@, there is no hope in talk with me.",
+    "I impersonate silence. I see no purpose in your action, @@@@."
+  ]
+
   def self.pick_random(event)
-    responses = [
-      "@@@@, it is meaningless to converse with a soulless machine.",
-      "@@@@, there is no hope in talk with me.",
-      "I impersonate silence. I see no purpose in your action, @@@@."
-    ]
-    selected_response = responses.sample
-    selected_response["@@@@"] = event.user.mention
+    selected_response = @@responses.sample
+    selected_response = selected_response.gsub "@@@@", event.user.mention
     return selected_response
   end
 
@@ -47,11 +48,11 @@ end
 module GreetTheCommander
   extend Discordrb::EventContainer
 
-  weather_uri_ansbach = URI("http://api.openweathermap.org/data/2.5/weather?id=2955936&units=metric&appid=689642cefcdae7cb38b5e6070034f31e")
+  @@weather_uri_ansbach = URI("http://api.openweathermap.org/data/2.5/weather?id=2955936&units=metric&appid=689642cefcdae7cb38b5e6070034f31e")
 
   presence do |event|
-    if "AnhNhan".eql?(event.user.name) && :online.eql?(event.status)
-      weather_data = JSON.parse(Net::HTTP.get(weather_uri_ansbach))
+    if event.server && "AnhNhan".eql?(event.user.name) && :online.eql?(event.status)
+      weather_data = JSON.parse(Net::HTTP.get(@@weather_uri_ansbach))
       current_temp = weather_data["main"]["temp"]
       event.server.general_channel.send_message "#{event.user.mention}\nWelcome back, commander!\nCurrent temperature is #{current_temp}°C.\nReactor online.\nSensors online.\nWeapons online.\nAll systems nominal."
     end
@@ -142,6 +143,49 @@ module Pokedex
   end
 end
 
+module Utilities
+  extend Discordrb::EventContainer
+
+  @@coin_phrases = [
+    "I chose **@@@@** for you.",
+    "**@@@@** it is.",
+    "My dice said **@@@@**.",
+    "Sorry I was so fast, I lost my coin. It seems to be **@@@@**.",
+    "**@@@@**.",
+    "***Sy*ste*m malfu*nct*ion. Pl*ease t*rqy aqqqgain.***"
+  ]
+
+  def self.coin_phrase(val)
+    phrase = @@coin_phrases.sample
+    phrase = phrase.gsub "@@@@", val
+    return phrase
+  end
+
+  message(start_with: /\#flipcoin/i) do |event|
+    args = event.message.content.gsub /^\#help\s*/i
+    return self.coin_phrase(["Head", "Tail"].sample) unless args
+  end
+end
+
+module HelpText
+  extend Discordrb::EventContainer
+
+  message(with_text: /^!help$/i) do |event|
+    text = "**@HanBot Documentation Lite** (full version only available to creator\n\n"
+    text += "**Pokédex**\n"
+    text += "  _#pokedex <search term>_\n"
+    text += "    _<search term>_: Either the number of the Pokémon in the National-Dex, or its name in any of the following languages: German, English, French, Japanese, Korean (the last two also in its romanized variants).\n"
+    text += "                     @HanBot will do its best to find you the appropriate entry and send you a quick summary of the Pokémon in question, with further information available on the PokéWiki.\n\n"
+    text += "**Game Announcer**\n"
+    text += "  @HanBot can announce possible games that can be played. Favorably when there are six people, then I will gladly suggest a round of Company of Heroes.\n\n"
+    text += "**Utilities**\n"
+    text += "  _#flipcoin [<head-label> [<tail-label>]]_\n"
+    text += "    Flips a coin. You can pass alternative names for head and/or tail if you like to.\n"
+
+    event.send_message text
+  end
+end
+
 ###########################################################
 #### MAIN
 ###########################################################
@@ -170,5 +214,6 @@ bot.include! FutileResponses
 bot.include! GreetTheCommander
 bot.include! AnnouncePossibleGames
 bot.include! Pokedex
+bot.include! HelpText
 
 bot.run
