@@ -208,7 +208,7 @@ localconf = YAML::load(File.read(localconf_filename))
 
 bot = Discordrb::Bot.new localconf["username"], localconf["password"]
 
-bot.message(with_text: "Ping!") do |event|
+bot.message(with_text: /^\W*ping\W*$/i) do |event|
   event.respond "Pong!"
 end
 
