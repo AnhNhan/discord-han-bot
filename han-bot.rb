@@ -187,7 +187,10 @@ module AudioClips
     if event && event.user.voice_channel
       if clip_exists
         channel = event.user.voice_channel
-        voice = event.bot.voice_connect(channel)
+        if channel != event.bot.bot_user.voice_channel
+          event.bot.voice_connect(channel)
+        end
+        voice = event.bot.voice
         old_volume = voice.volume
         voice.volume = 0.5
         voice.play_file @@audio_clip_map[clipname]
