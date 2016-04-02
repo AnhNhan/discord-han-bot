@@ -86,7 +86,7 @@ module Pokedex
       # this is necessary since the user might input too many zeroes
       query = query.gsub /^0+/, ""
       query = query.rjust(3, "0")
-      return pokedex.find{ |entry| query.eql? entry["id"] }
+      return @@pokedex.find{ |entry| query.eql? entry["id"] }
     else
       # search by name
       # slighty fuzzy search, not too fast, not too precise, pokemon with similar name may be mistaken
@@ -114,9 +114,14 @@ module Pokedex
     #event.send_message query_string
     search = self.search_pokemon(query_string)
     if search
+      imageinfo_api_uri = URI("http://www.pokewiki.de/api.php?action=query&format=json&prop=imageinfo&titles=Datei:Sugimori_709.png&iiprop=url")
+      imageinfo = JSON.parse(Net::HTTP.get(imageinfo_api_uri))
+      imageurl = imageinfo["query"]["pages"].values[0]["imageinfo"][0]["url"]
+
       entry = "**Pokédex-Eintrag *\#" + search["id"] + "***\n"
       entry += "**" + search["name_de"] + "** (" + [search["name_en"], search["name_jpr"]].join(", ") + ")\n"
       entry += "Typ: _" + search["type"].join("_, _") + "_\n"
+      entry += imageurl + "\n"
       entry += "http://www.pokewiki.de/" + search["name_de"] + "\n"
       event.send_message entry
     else
