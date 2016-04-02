@@ -88,30 +88,22 @@ module Pokedex
       query = query.rjust(3, "0")
       return pokedex.find{ |entry| query.eql? entry["id"] }
     else
-      event.respond "Searching for Pokédex entries by name is not supported yet."
-      return nil
-      # disabled for now
-
       # search by name
       # slighty fuzzy search, not too fast, not too precise, pokemon with similar name may be mistaken
       query = query.downcase.gsub /\s/, ""
-      puts "query is #{query}"
-      if !query
-        return nil
-      end
+      #puts "current query: #{query}"
+      return nil if !query
 
-      return @@pokedex.select do |entry|
-        return @@name_search_indexes.select do |index|
+      @@pokedex.find do |entry|
+        entryname = entry["name_de"]
+        #puts "at entry: #{entryname}"
+        @@name_search_indexes.find do |index|
           current_hayneedle = entry[index].downcase.gsub /\s/, ""
-          puts "current_hayneedle #{current_hayneedle}"
-          if !current_hayneedle
-            return true
-          end
-          if query.eql? current_hayneedle
-            return false
-          end
-          distance = Levenshtein.normalized_distance query, current_hayneedle
-          return distance >= query.length / 4
+          next if !current_hayneedle
+          distance_target = current_hayneedle.length / 4.0
+          distance = Levenshtein.distance query, current_hayneedle
+          #puts "#{current_hayneedle}: #{distance} -- #{distance_target}"
+          distance < distance_target
         end
       end
     end
@@ -119,7 +111,7 @@ module Pokedex
 
   message(start_with: /\#pokedex\s+[^\s]/i) do |event|
     query_string = event.message.content.scan(/\#pokedex\s+(.*?)\s*$/i)[0][0]
-    event.send_message query_string
+    #event.send_message query_string
     search = self.search_pokemon(query_string)
     if search
       # ...
