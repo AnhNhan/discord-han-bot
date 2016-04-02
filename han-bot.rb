@@ -184,18 +184,16 @@ module AudioClips
   message(start_with: /\#/) do |event|
     clipname = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0].downcase
     clip_exists = @@audio_clip_map.has_key? clipname
-    if event && event.user.voice_channel
-      if clip_exists
-        channel = event.user.voice_channel
-        if channel != event.bot.bot_user.voice_channel
-          event.bot.voice_connect(channel)
-        end
-        voice = event.bot.voice
-        old_volume = voice.volume
-        voice.volume = 0.5
-        voice.play_io open(@@audio_clip_map[clipname])
-        voice.volume = old_volume
+    if event && event.user.voice_channel && .voice_connect(channel)
+      channel = event.user.voice_channel
+      if channel != event.bot.bot_user.voice_channel
+        event.bot.voice_connect(channel)
       end
+      voice = event.bot.voice
+      old_volume = voice.volume
+      voice.volume = 0.5
+      voice.play_io open(@@audio_clip_map[clipname])
+      voice.volume = old_volume
     else
       if event && clip_exists
         event.respond "#{event.user.mention} I'm sorry, you tried to play _#{clipname}_ but I could not find your current voice channel.\n_If you are already situated in one, please try re-joining, I'm not sure where the problem is exactly._"
