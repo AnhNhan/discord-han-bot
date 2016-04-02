@@ -114,8 +114,11 @@ module Pokedex
     #event.send_message query_string
     search = self.search_pokemon(query_string)
     if search
-      # ...
-      event.send_message "#{event.user.mention} #{search}"
+      entry = "**Pokédex-Eintrag *\#" + search["id"] + "***\n"
+      entry += "**" + search["name_de"] + "** (" + [search["name_en"], search["name_jpr"]].join(", ") + ")\n"
+      entry += "Typ: _" + search["type"].join("_, _") + "_\n"
+      entry += "http://www.pokewiki.de/" + search["name_de"] + "\n"
+      event.send_message entry
     else
       event.send_message "#{event.user.mention} '#{query_string}' could not be found in the Pokédex."
     end
