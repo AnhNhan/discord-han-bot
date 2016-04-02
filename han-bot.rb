@@ -84,7 +84,7 @@ module Pokedex
       #
       # strip all leading zeros and re-pad them later again
       # this is necessary since the user might input too many zeroes
-      query = query.gsub /^0+/, ""
+      query = query.gsub /^\#?0+/, ""
       query = query.rjust(3, "0")
       return @@pokedex.find{ |entry| query.eql? entry["id"] }
     else
