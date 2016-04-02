@@ -119,7 +119,7 @@ module Pokedex
       imageurl = imageinfo["query"]["pages"].values[0]["imageinfo"][0]["url"]
 
       entry = "**Pokédex-Eintrag *\#" + search["id"] + "***\n"
-      entry += "**" + search["name_de"] + "** (" + [search["name_en"], search["name_jpr"]].join(", ") + ")\n"
+      entry += "**" + search["name_de"] + "**" + self.foreignnames(entry, ["name_en", "name_jpr"]) + "\n"
       entry += "Typ: _" + search["type"].join("_, _") + "_\n"
       entry += imageurl + "\n"
       entry += "http://www.pokewiki.de/" + search["name_de"] + "\n"
@@ -127,6 +127,18 @@ module Pokedex
     else
       event.send_message "#{event.user.mention} '#{query_string}' could not be found in the Pokédex."
     end
+  end
+
+  def self.foreignnames(entry, indexes)
+    snippets = Array.new
+    indexes.each do |index|
+      name = entry[index]
+      lang = index.gsub "name_", ""
+      lang = lang.slice 0, 2 # remove romanization denotation suffix
+      snippets.push lang + ".: " + name
+    end
+    return "" unless snippets.length
+    return " (" + snippets.join(", ") + ")"
   end
 end
 
