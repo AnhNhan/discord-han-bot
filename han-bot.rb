@@ -181,12 +181,12 @@ module AudioClips
   message(start_with: /\#/) do |event|
     if event && event.user.voice_channel
       clipname = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0]
-      if audio_clip_map.has_key? clipname
+      if @@audio_clip_map.has_key? clipname
         channel = event.user.voice_channel
         voice = event.bot.voice_connect(channel)
         old_volume = voice.volume
         voice.volume = 0.5
-        voice.play_file audio_clip_map[clipname]
+        voice.play_file @@audio_clip_map[clipname]
         voice.volume = old_volume
       end
     end
@@ -242,6 +242,7 @@ bot.include! GreetTheCommander
 bot.include! AnnouncePossibleGames
 bot.include! Pokedex
 bot.include! Utilities
+bot.include! AudioClips
 bot.include! HelpText
 
 bot.run
