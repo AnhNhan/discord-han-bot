@@ -255,11 +255,11 @@ module HelpText
     text += "  _#audio-list_\n"
     text += "    lists all audio clip names"
     text += "  _#audio-stop\n"
-    text += "    Stops the current playback. Note that there are playback- and netword-related delays, so give it a few seconds."
+    text += "    Stops the current playback. Note that there are playback- and netword-related delays, so give it a few seconds.\n"
     text += "  _#audio-pause\n"
-    text += "    Pauses the current playback. Note that there are playback- and netword-related delays, so give it a few seconds."
+    text += "    Pauses the current playback. Note that there are playback- and netword-related delays, so give it a few seconds.\n"
     text += "  _#audio-continue\n"
-    text += "    Continues the current playback. Note that there are playback- and netword-related delays, so give it a few seconds."
+    text += "    Continues the current playback. Note that there are playback- and netword-related delays, so give it a few seconds.\n"
 
     event.send_message text
   end
