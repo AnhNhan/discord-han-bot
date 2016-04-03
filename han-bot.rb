@@ -290,7 +290,7 @@ end
 
 bot.include! GeneralAnnouncer
 bot.include! FutileResponses
-bot.include! GreetTheCommander
+# bot.include! GreetTheCommander
 bot.include! AnnouncePossibleGames
 bot.include! Pokedex
 bot.include! Utilities
