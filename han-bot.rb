@@ -199,7 +199,7 @@ module AudioClips
       end
       voice = event.bot.voice
       old_volume = voice.volume
-      voice.volume = 0.5
+      voice.volume = 0.4
       voice.play_io open(@@audio_clip_map[clipname])
       voice.volume = old_volume
     else
