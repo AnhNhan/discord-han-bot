@@ -219,6 +219,21 @@ module AudioClips
     new_length = @@audio_clip_map.keys.length
     event.respond "Done! Found #{new_length} files. Δ of #{new_length - old_length}."
   end
+
+  message(content: "#audio-stop") do |event|
+    event.bot.voice.stop_playing
+    event.respond "Command received. Playback should stop within a few seconds."
+  end
+
+  message(content: "#audio-pause") do |event|
+    event.bot.voice.pause
+    event.respond "Command received. Playback should pause within a few seconds."
+  end
+
+  message(content: "#audio-continue") do |event|
+    event.bot.voice.continue
+    event.respond "Command received. Playback should continue within a few seconds."
+  end
 end
 
 module HelpText
@@ -239,6 +254,12 @@ module HelpText
     text += "**Audio Clips**\n"
     text += "  _#audio-list_\n"
     text += "    lists all audio clip names"
+    text += "  _#audio-stop\n"
+    text += "    Stops the current playback. Note that there are playback- and netword-related delays, so give it a few seconds."
+    text += "  _#audio-pause\n"
+    text += "    Pauses the current playback. Note that there are playback- and netword-related delays, so give it a few seconds."
+    text += "  _#audio-continue\n"
+    text += "    Continues the current playback. Note that there are playback- and netword-related delays, so give it a few seconds."
 
     event.send_message text
   end
