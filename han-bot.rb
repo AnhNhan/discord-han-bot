@@ -174,12 +174,20 @@ module Utilities
       event.respond self.coin_phrase(["Head", "Tail"].sample)
     end
   end
+
+  message(content: "#git-pull") do |event|
+    event.respond "Done.\n#{`git pull`}"
+  end
 end
 
 module AudioClips
   extend Discordrb::EventContainer
 
-  @@audio_clip_map = Hash[ Dir.glob('./content/audioclips/**/*').select{ |e| File.file? e }.map{ |e| [File.basename(e, ".*"), e] } ]
+  @@audio_clip_map = self.scan_files()
+
+  def self.scan_files()
+    Hash[ Dir.glob('./content/audioclips/**/*').select{ |e| File.file? e }.map{ |e| [File.basename(e, ".*"), e] } ]
+  end
 
   message(start_with: /\#/) do |event|
     clipname = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0].downcase
@@ -202,7 +210,14 @@ module AudioClips
   end
 
   message(content: "#audio-list") do |event|
-    event.send_message @@audio_clip_map.keys.map{ |k| "#" + k }.join("\n")
+    event.send_message @@audio_clip_map.keys.sort.reverse!.map{ |k| "#" + k }.join("\n")
+  end
+
+  message(content: "#audio-reload") do |event|
+    old_length = @@audio_clip_map.keys.length
+    @@audio_clip_map = self.scan_files()
+    new_length = @@audio_clip_map.keys.length
+    event.respond "Done! Found #{new_length} files. Δ of #{new_length - old_length}."
   end
 end
 
