@@ -183,11 +183,11 @@ end
 module AudioClips
   extend Discordrb::EventContainer
 
-  @@audio_clip_map = self.scan_files()
-
   def self.scan_files()
     Hash[ Dir.glob('./content/audioclips/**/*').select{ |e| File.file? e }.map{ |e| [File.basename(e, ".*"), e] } ]
   end
+
+  @@audio_clip_map = self.scan_files()
 
   message(start_with: /\#/) do |event|
     clipname = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0].downcase
