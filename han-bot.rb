@@ -198,18 +198,18 @@ module Utilities
           break
         end
         scan = scan[0]
-        num_dices = scan[0]
+        num_dices = scan[0].to_i
         if !num_dices
           num_dices = 1
         end
-        dice_eyecount = scan[1]
-        value_addition = scan[2]
+        dice_eyecount = scan[1].to_i
+        value_addition = scan[2].to_i
         if !value_addition
           value_addition = 0
         end
 
-        dice_rolls = (1..num_dices).each{ |i| [ i, (1..dice_eyecount).sample ] }
-        total = dice_rolls.inject 0, :+
+        dice_rolls = (1..num_dices).map{ |i| [ i, (1..dice_eyecount).sample ] }
+        total = dice_rolls.inject(0){ |sum, val| sum + val[1] }
         text = "Rolled: **#{total}**\n"
         text += "Single dices:\n"
         text += dice_rolls.map{ |roll| "  - #{roll[1]} (\##{roll[0]})\n" }.join
