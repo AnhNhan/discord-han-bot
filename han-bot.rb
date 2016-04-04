@@ -246,7 +246,7 @@ module Utilities
   message(content: "#prune-channel") do |event|
     if event.user.tag.eql? "6895"
       delete_count = 20
-      channel = event.channal
+      channel = event.channel
       history = channel.history delete_count
       while history.length > 0
         channel.prune delete_count
@@ -283,7 +283,7 @@ module AudioClips
     else
       if event && clip_exists
         if event.bot.voice # just play in the current channel
-          event.user.pm "You currently don't seem to be in a voice channel, but I'm doing the courtesy nonetheless, just to annoy the other people. Playing _#{args}_!"
+          event.user.pm "You currently don't seem to be in a voice channel, but I'm doing the courtesy nonetheless, just to annoy the other people. Playing _#{event.message.content}_!"
           event.bot.voice.play_io open(@@audio_clip_map[clipname])
         else # no channal found
           event.respond "#{event.user.mention} I'm sorry, you tried to play _#{clipname}_ but I could not find your current voice channel.\n_If you are already situated in one, please try re-joining, I'm not sure where the problem is exactly._\n_Or I just don't have access to your current channel._"
