@@ -196,7 +196,7 @@ module Utilities
         upper_bound = args.to_i
         event.respond self.coin_phrase((1..upper_bound).to_a.sample)
       else
-        scan = args.scan /^(\d+)?[dw](\d+)(?:\+(\d+))?$/i
+        scan = args.scan /^(\d+)?[dw](\d+)(?:\s*\+\s*(\d+))?$/i
         if scan.length == 0
           event.respond "Invalid roll value of '#{scan}'."
           break
