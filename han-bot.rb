@@ -128,8 +128,8 @@ module Pokedex
       entry = "**Pokédex-Eintrag *\#" + search["id"] + "***\n"
       entry += "**" + search["name_de"] + "**" + self.foreignnames(entry, ["name_en", "name_jpr"]) + "\n"
       entry += "Typ: _" + search["type"].join("_, _") + "_\n"
-      entry += imageurl + "\n"
       entry += "http://www.pokewiki.de/" + search["name_de"] + "\n"
+      entry += imageurl + "\n"
       event.send_message entry
     else
       event.send_message "#{event.user.mention} '#{query_string}' could not be found in the Pokédex."
