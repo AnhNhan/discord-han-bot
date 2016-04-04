@@ -245,14 +245,18 @@ module Utilities
 
   message(content: "#prune-channel") do |event|
     if event.user.tag.eql? "6895"
-      delete_count = 20
-      channel = event.channel
-      history = channel.history delete_count
-      while history.length > 0
-        channel.prune delete_count
-        sleep 0.2
+      begin
+        delete_count = 20
+        channel = event.channel
+        history = channel.history delete_count
+        while history.length > 0
+            channel.prune delete_count
+            sleep 0.2
+        end
+        event.respond "#{event.user.mention} you should now be at the beginning of this channel."
+      rescue Exception
+        event.respond "#{event.user.mention} something seems to have gone wrong. A possible cause is that #{event.bot.bot_user.mention} does not have the appropriate permission to accomplish this action. Please contact its creator."
       end
-      event.respond "#{event.user.mention} you should now be at the beginning of this channel."
     else
       event.respond "#{event.user.mention} you do not have permission to complete this command."
     end
