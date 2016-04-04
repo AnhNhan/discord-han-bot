@@ -236,7 +236,7 @@ module Utilities
 
   message(start_with: /\#spank @/) do |event|
     mentions = event.message.mentions.map(&:mention).join " "
-    event.message.respond "#{mentions} bend over bitch and accept your punishment\nhttps://cdn.discordapp.com/attachments/107942652275601408/107945087350079488/TuHGJ.gif"
+    event.respond "#{mentions} bend over bitch and accept your punishment\nhttps://cdn.discordapp.com/attachments/107942652275601408/107945087350079488/TuHGJ.gif"
   end
 
   message(content: "#git-pull") do |event|
@@ -262,13 +262,10 @@ module AudioClips
         event.bot.voice_connect(channel)
       end
       voice = event.bot.voice
-      old_volume = voice.volume
-      voice.volume = 0.4
       voice.play_io open(@@audio_clip_map[clipname])
-      voice.volume = old_volume
     else
       if event && clip_exists
-        event.respond "#{event.user.mention} I'm sorry, you tried to play _#{clipname}_ but I could not find your current voice channel.\n_If you are already situated in one, please try re-joining, I'm not sure where the problem is exactly._"
+        event.respond "#{event.user.mention} I'm sorry, you tried to play _#{clipname}_ but I could not find your current voice channel.\n_If you are already situated in one, please try re-joining, I'm not sure where the problem is exactly._\n_Or I just don't have access to your current channel._"
       end
     end
   end
@@ -315,7 +312,7 @@ module HelpText
     text += "**Utilities**\n"
     text += "  _#flipcoin [<head-label> [<tail-label> [coin-butt-label]]]_\n"
     text += "    Flips a coin. You can pass alternative names for head and/or tail if you like to. If you give it more options, it will pick one randomly.\n"
-    text += "  _#roll_ / _#roll w3_ / _#roll 2d6 #roll d3+3_\n"
+    text += "  _#roll_\n  _#roll w3_\n  _#roll 2d6_\n  _#roll d3+3_\n"
     text += "    Simulates a dice roll. If you give it a dice-spec, it will roll within that range. @HanBot will detail the eye count numbers so you can e.g. choose re-rolls / read hit counts. Offsets apply to the total eye count.\n"
     text += "**Audio Clips**\n"
     text += "  _#audio-list_\n"
@@ -362,5 +359,9 @@ bot.include! Pokedex
 bot.include! Utilities
 bot.include! AudioClips
 bot.include! HelpText
+
+bot.voice.volume = 0.4
+bot.voice.adjust_average = false
+bot.voice.length_override = Voice::IDEAL_LENGTH
 
 bot.run
