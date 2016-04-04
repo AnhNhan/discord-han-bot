@@ -125,7 +125,7 @@ module Pokedex
       imageurl = imageinfo["query"]["pages"].values[0]["imageinfo"][0]["url"]
 
       entry = "**Pokédex-Eintrag *\#" + search["id"] + "***\n"
-      entry += "**" + search["name_de"] + "**" + self.foreignnames(entry, ["name_en", "name_jpr"]) + "\n"
+      entry += "**" + search["name_de"] + "**" + self.foreignnames(search, ["name_en", "name_jpr"]) + "\n"
       entry += "Typ: _" + search["type"].join("_, _") + "_\n"
       entry += "http://www.pokewiki.de/" + search["name_de"] + "\n"
       entry += imageurl + "\n"
