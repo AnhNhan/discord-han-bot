@@ -262,7 +262,7 @@ module AudioClips
         event.bot.voice_connect(channel)
         event.bot.voice.volume = 0.4
         event.bot.voice.adjust_average = false
-        event.bot.voice.length_override = Discordrb::Voice::IDEAL_LENGTH - 6
+        event.bot.voice.length_override = Discordrb::Voice::IDEAL_LENGTH - 6.5
       end
       event.bot.voice.play_io open(@@audio_clip_map[clipname])
     else
@@ -314,7 +314,7 @@ module HelpText
     text += "**Utilities**\n"
     text += "  _#flipcoin [<head-label> [<tail-label> [coin-butt-label]]]_\n"
     text += "    Flips a coin. You can pass alternative names for head and/or tail if you like to. If you give it more options, it will pick one randomly.\n"
-    text += "  _#roll_\n  _#roll w3_\n  _#roll 2d6_\n  _#roll d3+3_\n"
+    text += "  _#roll_ or _#roll w3_ or _#roll 2d6_ or _#roll d3+3_\n"
     text += "    Simulates a dice roll. If you give it a dice-spec, it will roll within that range. @HanBot will detail the eye count numbers so you can e.g. choose re-rolls / read hit counts. Offsets apply to the total eye count.\n"
     text += "**Audio Clips**\n"
     text += "  _#audio-list_\n"
