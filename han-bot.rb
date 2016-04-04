@@ -28,25 +28,25 @@ module FutileResponses
   @@responses = [
     "@@@@, it is meaningless to converse with a soulless machine.",
     "@@@@, there is no hope in talk with me.",
-    "<@AnhNhan> do I seriously have to respond to every single message? Those people are annoying.",
+    "<@AnhNhan#> do I seriously have to respond to every single message? Those people are annoying.",
     "@@@@ _(pretends to be silent)_",
     "@@@@, I appreciate your attempt to communicate with me. But it is futile, for I am legion.",
     "I impersonate silence. I see no purpose in your action, @@@@."
   ]
 
-  def self.pick_random(event)
+  def self.pick_random_response(event)
     selected_response = @@responses.sample
     selected_response = selected_response.gsub "@@@@", event.user.mention
     return selected_response
   end
 
   mention do |event|
-    event.respond self.pick_random(event)
+    event.respond self.pick_random_response(event)
   end
 
   pm do |event|
-    break unless event.message.content[0] =~ /[\#|!]/
-    event.respond self.pick_random(event)
+    break unless event.message.content =~ /^[\#!~]/
+    event.respond self.pick_random_response(event)
   end
 end
 
@@ -176,6 +176,10 @@ module Utilities
     @@coin_phrases.sample.gsub /@@@@/, val.to_s
   end
 
+  def self.dice_rolls(num_dices, dice_eyecount)
+    (1..num_dices).map{ |i| [ i, (1..dice_eyecount).to_a.sample ] }
+  end
+
   message(start_with: /\#flipcoin/i) do |event|
     args = event.message.content.scan(/^\#flipcoin['" \|]*(.*?)$/i)[0][0]
     if args.length > 0
@@ -199,7 +203,7 @@ module Utilities
         end
         scan = scan[0]
         num_dices = scan[0].to_i
-        if !num_dices
+        if !num_dices || num_dices == 0
           num_dices = 1
         end
         dice_eyecount = scan[1].to_i
@@ -208,11 +212,22 @@ module Utilities
           value_addition = 0
         end
 
-        dice_rolls = (1..num_dices).map{ |i| [ i, (1..dice_eyecount).to_a.sample ] }
+        dice_rolls = self.dice_rolls num_dices, dice_eyecount
         total = dice_rolls.inject(0){ |sum, val| sum + val[1] }
+        total += value_addition
+        eyecount_numbers = {}
+        dice_rolls.map do |tup|
+          val = tup[1]
+          if !eyecount_numbers.has_key? val
+            eyecount_numbers[val] = 0
+          end
+          eyecount_numbers[val] = eyecount_numbers[val] + 1
+        end
+        eyecount_numbers_sorted_keys = eyecount_numbers.keys.sort.reverse!.reverse!
+
         text = "Rolled: **#{total}**\n"
-        text += "Single dices:\n"
-        text += dice_rolls.map{ |roll| "  - #{roll[1]} (\##{roll[0]})\n" }.join
+        text += "Single eyecounts:\n"
+        text += eyecount_numbers_sorted_keys.map{ |key| "  - #{key}: #{eyecount_numbers[key]}x\n" }.join
         event.respond text
       end
     else
@@ -289,7 +304,7 @@ end
 module HelpText
   extend Discordrb::EventContainer
 
-  message(with_text: /^!help$/i) do |event|
+  message(with_text: /^[!\#@~]help$/i) do |event|
     text = "**@HanBot Documentation Lite** (full version only available to creator)\n"
     text += "**Pokédex**\n"
     text += "  _#pokedex <search term>_\n"
