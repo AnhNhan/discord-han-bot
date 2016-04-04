@@ -156,14 +156,24 @@ module Utilities
     "I chose **@@@@** for you.",
     "**@@@@** it is.",
     "My dice said **@@@@**.",
+    "My coin said **@@@@**.",
+    "My DnD dice said **@@@@**.",
+    "Roll for initiative! **@@@@**.",
     "Sorry I was so fast, I lost my coin. It seems to be **@@@@**.",
+    "**@@@@**.",
+    "**@@@@**.",
+    "**@@@@**.",
+    "**@@@@**.",
+    "**@@@@**.",
+    "**@@@@**.",
+    "**@@@@**.",
     "**@@@@**.",
     "For the n+1-th time, it's **@@@@**.",
     "***Sy*ste*m malfu*nct*ion. Pl*ease t*rqy aqqqgain.***"
   ]
 
   def self.coin_phrase(val)
-    @@coin_phrases.sample.gsub /@@@@/, val
+    @@coin_phrases.sample.gsub /@@@@/, val.to_s
   end
 
   message(start_with: /\#flipcoin/i) do |event|
@@ -173,6 +183,45 @@ module Utilities
     else
       event.respond self.coin_phrase(["Head", "Tail"].sample)
     end
+  end
+
+  message(start_with: /\#roll/i) do |event|
+    args = event.message.content.scan(/^\#roll\s*(.*?)\s*$/i)[0][0]
+    if args.length > 0
+      if args =~ /^\d+$/
+        upper_bound = args.to_i
+        event.respond self.coin_phrase((1..upper_bound).to_a.sample)
+      else
+        scan = args.scan /^(\d+)?[dw](\d+)(?:\+(\d+))?$/i
+        if scan.length == 0
+          event.respond "Invalid roll value of '#{scan}'."
+          break
+        end
+        scan = scan[0]
+        num_dices = scan[0]
+        if !num_dices
+          num_dices = 1
+        end
+        dice_eyecount = scan[1]
+        value_addition = scan[2]
+        if !value_addition
+          value_addition = 0
+        end
+
+        dice_rolls = (1..num_dices).each{ |i| [ i, (1..dice_eyecount).sample ] }
+        total = dice_rolls.inject 0, :+
+        text = "Rolled: **#{total}**\n"
+        text += "Single dices:\n"
+        text += dice_rolls.map{ |roll| "  - #{roll[1]} (\##{roll[0]})\n" }.join
+      end
+    else
+      event.respond self.coin_phrase((1..6).to_a.sample)
+    end
+  end
+
+  message(start_with: /\#spank @/) do |event|
+    mentions = event.message.mentions.map(&:mention).join " "
+    event.message.respond "#{mentions} bend over bitch and accept your punishment\nhttps://cdn.discordapp.com/attachments/107942652275601408/107945087350079488/TuHGJ.gif"
   end
 
   message(content: "#git-pull") do |event|
