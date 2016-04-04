@@ -262,7 +262,7 @@ module AudioClips
         event.bot.voice_connect(channel)
         event.bot.voice.volume = 0.4
         event.bot.voice.adjust_average = false
-        event.bot.voice.length_override = Voice::IDEAL_LENGTH - 6.5
+        event.bot.voice.length_override = Discordrb::Voice::IDEAL_LENGTH - 6.5
       end
       event.bot.voice.play_io open(@@audio_clip_map[clipname])
     else
