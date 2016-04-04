@@ -253,7 +253,6 @@ module Utilities
             channel.prune delete_count
             sleep 0.2
         end
-        event.respond "#{event.user.mention} you should now be at the beginning of this channel."
       rescue Exception
         event.respond "#{event.user.mention} something seems to have gone wrong. A possible cause is that #{event.bot.bot_user.mention} does not have the appropriate permission to accomplish this action. Please contact its creator."
       end
