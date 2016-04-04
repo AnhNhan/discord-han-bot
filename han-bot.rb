@@ -109,7 +109,7 @@ module Pokedex
           distance_target = current_hayneedle.length / 4.0
           distance = Levenshtein.distance query, current_hayneedle
           #puts "#{current_hayneedle}: #{distance} -- #{distance_target}"
-          distance < distance_target
+          distance * 1.0 <= distance_target
         end
       end
     end
