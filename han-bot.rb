@@ -84,7 +84,7 @@ module Pokedex
   @@pokedex = JSON.parse(File.read("pokemon-list.json"))
   @@name_search_indexes = [ "name_de", "name_en", "name_fr", "name_jp", "name_jpr", "name_kr", "name_krr" ]
 
-  def self.search_pokemon(query)
+  def self.search_pokemon(query, current_level = 0, max_level = 3)
     if query =~ /^\d+$/
       # search by id
       #
@@ -100,18 +100,23 @@ module Pokedex
       #puts "current query: #{query}"
       return nil if !query
 
-      @@pokedex.find do |entry|
+      result = @@pokedex.find do |entry|
         entryname = entry["name_de"]
         #puts "at entry: #{entryname}"
         @@name_search_indexes.find do |index|
           current_hayneedle = entry[index].downcase.gsub /\s/, ""
           next if !current_hayneedle
-          distance_target = current_hayneedle.length / 4.0
+          distance_target = current_level
           distance = Levenshtein.distance query, current_hayneedle
           #puts "#{current_hayneedle}: #{distance} -- #{distance_target}"
           distance * 1.0 <= distance_target
         end
       end
+
+      if !result && current_level < max_level
+        result = self.search_pokemon query, current_level + 1, max_level
+      end
+      result
     end
   end
 
