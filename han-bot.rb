@@ -208,7 +208,7 @@ module Utilities
           value_addition = 0
         end
 
-        dice_rolls = (1..num_dices).map{ |i| [ i, (1..dice_eyecount).sample ] }
+        dice_rolls = (1..num_dices).map{ |i| [ i, (1..dice_eyecount).to_a.sample ] }
         total = dice_rolls.inject(0){ |sum, val| sum + val[1] }
         text = "Rolled: **#{total}**\n"
         text += "Single dices:\n"
