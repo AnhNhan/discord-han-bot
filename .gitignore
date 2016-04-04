@@ -1,5 +1,6 @@
 localconf.yml
 pokemon-list.json
+Thumbs.db
 
 *.gem
 *.rbc
