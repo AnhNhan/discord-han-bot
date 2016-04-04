@@ -213,6 +213,7 @@ module Utilities
         text = "Rolled: **#{total}**\n"
         text += "Single dices:\n"
         text += dice_rolls.map{ |roll| "  - #{roll[1]} (\##{roll[0]})\n" }.join
+        event.respond text
       end
     else
       event.respond self.coin_phrase((1..6).to_a.sample)
