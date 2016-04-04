@@ -44,8 +44,7 @@ module FutileResponses
     event.respond self.pick_random_response(event)
   end
 
-  pm do |event|
-    break unless event.message.content =~ /^[\#!~]/
+  pm(start_with: not!(/[\#!~]/)) do |event|
     event.respond self.pick_random_response(event)
   end
 end
