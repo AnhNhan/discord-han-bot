@@ -260,9 +260,11 @@ module AudioClips
       channel = event.user.voice_channel
       if channel != event.bot.bot_user.voice_channel
         event.bot.voice_connect(channel)
+        event.bot.voice.volume = 0.4
+        event.bot.voice.adjust_average = false
+        event.bot.voice.length_override = Voice::IDEAL_LENGTH
       end
-      voice = event.bot.voice
-      voice.play_io open(@@audio_clip_map[clipname])
+      event.bot.voice.play_io open(@@audio_clip_map[clipname])
     else
       if event && clip_exists
         event.respond "#{event.user.mention} I'm sorry, you tried to play _#{clipname}_ but I could not find your current voice channel.\n_If you are already situated in one, please try re-joining, I'm not sure where the problem is exactly._\n_Or I just don't have access to your current channel._"
@@ -359,9 +361,5 @@ bot.include! Pokedex
 bot.include! Utilities
 bot.include! AudioClips
 bot.include! HelpText
-
-bot.voice.volume = 0.4
-bot.voice.adjust_average = false
-bot.voice.length_override = Voice::IDEAL_LENGTH
 
 bot.run
