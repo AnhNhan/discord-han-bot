@@ -234,7 +234,7 @@ module Utilities
     end
   end
 
-  message(start_with: /\#spank @/) do |event|
+  message(start_with: "#spank ") do |event|
     mentions = event.message.mentions.map(&:mention).join " "
     event.respond "#{mentions} bend over bitch and accept your punishment\nhttps://cdn.discordapp.com/attachments/107942652275601408/107945087350079488/TuHGJ.gif"
   end
