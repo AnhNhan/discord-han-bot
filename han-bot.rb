@@ -265,6 +265,12 @@ module Utilities
       event.respond "#{event.user.mention} you do not have permission to complete this command."
     end
   end
+
+  message(content: "#uptime") do |event|
+    pid = Process.pid
+    uptime = `ps -p #{pid} -o etime=`
+    event.respond "I have been running for exactly **#{uptime.strip}**, and counting!"
+  end
 end
 
 module AudioClips
