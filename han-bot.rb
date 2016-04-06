@@ -32,7 +32,7 @@ $_valid_command_callbacks = []
 
 def valid_command?(str)
   str = str.downcase.strip
-  $_global_commands.include? str || $_valid_command_callbacks.map{ |cb| cb.call(str) }.any?
+  $_global_commands.include?(str) || $_valid_command_callbacks.map{ |cb| cb.call(str) }.any?
 end
 
 ###########################################################
