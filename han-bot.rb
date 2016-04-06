@@ -7,6 +7,39 @@ require 'json'
 require 'levenshtein'
 
 ###########################################################
+#### GLOBALS & GENERALS
+###########################################################
+
+localconf_filename = "localconf.yml"
+_global_commands = [
+  "help",
+  "pokedex",
+  "flipcoin",
+  "roll",
+  "spank",
+  "prune-channel",
+  "git-pull",
+  "uptime",
+  "audio-list",
+  "audio-reload",
+  "audio-stop",
+  "audio-pause",
+  "audio-continue",
+  "meme-list",
+  "meme-reload"
+]
+$_valid_command_callbacks = []
+
+def valid_command?(str)
+  str = str.downcase.strip
+  if global_commands.include? str
+    true
+  else
+    $_valid_command_callbacks.map{ |cb| cb.call(str) }.any?
+  end
+end
+
+###########################################################
 #### MODULES
 ###########################################################
 
@@ -239,7 +272,7 @@ module Utilities
     end
   end
 
-  message(start_with: "#spank ") do |event|
+  message(start_with: "#spank") do |event|
     mentions = event.message.mentions.map(&:mention).join " "
     event.respond "#{mentions} bend over bitch and accept your punishment\nhttps://cdn.discordapp.com/attachments/107942652275601408/107945087350079488/TuHGJ.gif"
   end
@@ -271,6 +304,13 @@ module Utilities
     uptime = `ps -p #{pid} -o etime=`
     event.respond "I have been running for exactly **#{uptime.strip}**, and counting!"
   end
+
+  message(start_with: /[\#!~]/) do |event|
+    command_name = event.message.content.scan(/^\#(.*?)(\s+|$)/i)[0][0]
+    if !valid_command?(command_name)
+      event.send_message "#{event.user.mentiion} that command does not exist."
+    end
+  end
 end
 
 module AudioClips
@@ -282,8 +322,9 @@ module AudioClips
 
   @@audio_clip_map = self.scan_files()
 
+  $_valid_command_callbacks.push { |str| @@audio_clip_map.has_key?(str) }
+
   message(start_with: /\#/) do |event|
-    # audio clip not found error handled by memes
     clipname = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0].downcase
     clip_exists = @@audio_clip_map.has_key? clipname
     if event && event.user.voice_channel && clip_exists
@@ -343,6 +384,8 @@ module Memes
 
   @@memes = self.scan_files()
 
+  $_valid_command_callbacks.push { |str| @@memes.has_key?(str) }
+
   message(start_with: /\#/) do |event|
     meme_name = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0].downcase
     meme_exists = @@memes.has_key? meme_name
@@ -352,10 +395,11 @@ module Memes
         event.respond "_" + meme["comment"].to_s + "_"
       end
       event.respond meme["img-url"]
-    else
-      # Also handles errors for audio clips
-      event.respond "#{event.user.mention} I'm sorry, you tried to access a content asset named \##{meme_name}, but it does not exist."
     end
+  end
+
+  message(content: "#meme-list") do |event|
+    event.send_message @@memes.keys.sort.reverse!.reverse!.map{ |k| "#" + k }.join("\n")
   end
 
   message(content: "#meme-reload") do |event|
@@ -400,8 +444,6 @@ end
 ###########################################################
 #### MAIN
 ###########################################################
-
-localconf_filename = "localconf.yml"
 
 if !File.exists?(localconf_filename)
   puts "Local config file not found - empty config file '#{localconf_filename}' will be created"
