@@ -32,11 +32,7 @@ $_valid_command_callbacks = []
 
 def valid_command?(str)
   str = str.downcase.strip
-  if $_global_commands.include? str
-    true
-  else
-    $_valid_command_callbacks.map{ |cb| cb.call(str) }.any?
-  end
+  $_global_commands.include? str || $_valid_command_callbacks.map{ |cb| cb.call(str) }.any?
 end
 
 ###########################################################
@@ -164,7 +160,7 @@ module Pokedex
       imageurl = imageinfo["query"]["pages"].values[0]["imageinfo"][0]["url"]
 
       entry = "**Pokédex-Eintrag *\#" + search["id"] + "***\n"
-      entry += "**" + search["name_de"] + "**" + self.foreignnames(search, ["name_en", "name_jpr"]) + "\n"
+      entry += "**" + search["name_de"] + "**" + self.foreignnames(search, ["name_en", "name_jpr"]).to_s + "\n"
       entry += "Typ: _" + search["type"].join("_, _") + "_\n"
       entry += "http://www.pokewiki.de/" + search["name_de"] + "\n"
       entry += imageurl + "\n"
@@ -182,8 +178,11 @@ module Pokedex
       lang = lang.slice 0, 2 # remove romanization denotation suffix
       snippets.push lang + ".: " + name
     end
-    return "" unless snippets.length
-    return " (" + snippets.join(", ") + ")"
+    if snippets.length > 0
+      " (" + snippets.join(", ") + ")"
+    else
+      ""
+    end
   end
 end
 
@@ -323,8 +322,6 @@ module AudioClips
 
   @@audio_clip_map = self.scan_files()
 
-  $_valid_command_callbacks.push { |str| @@audio_clip_map.has_key?(str) }
-
   message(start_with: /\#/) do |event|
     clipname = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0].downcase
     clip_exists = @@audio_clip_map.has_key? clipname
@@ -384,8 +381,6 @@ module Memes
   end
 
   @@memes = self.scan_files()
-
-  $_valid_command_callbacks.push { |str| @@memes.has_key?(str) }
 
   message(start_with: /\#/) do |event|
     meme_name = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0].downcase
@@ -472,5 +467,8 @@ bot.include! Utilities
 bot.include! AudioClips
 bot.include! Memes
 bot.include! HelpText
+
+$_valid_command_callbacks.push lambda { |str| AudioClips.audio_clip_map.has_key?(str) }
+$_valid_command_callbacks.push lambda { |str| Memes.memes.has_key?(str) }
 
 bot.run
