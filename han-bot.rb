@@ -11,7 +11,7 @@ require 'levenshtein'
 ###########################################################
 
 localconf_filename = "localconf.yml"
-_global_commands = [
+$_global_commands = [
   "help",
   "pokedex",
   "flipcoin",
@@ -32,7 +32,7 @@ $_valid_command_callbacks = []
 
 def valid_command?(str)
   str = str.downcase.strip
-  if global_commands.include? str
+  if $_global_commands.include? str
     true
   else
     $_valid_command_callbacks.map{ |cb| cb.call(str) }.any?
@@ -102,7 +102,8 @@ module AnnouncePossibleGames
 
   presence do |event|
     if event.server
-      online_users = event.server.users.select{ |u| u.status.eql?(:online) }
+      #TODO: Support other bot recognition. Username-based, anyone?
+      online_users = event.server.users.select{ |u| !u.bot? && u.status.eql?(:online) }
       if online_users.length == 6
         online_user_names = online_users.map(&:name).join ", "
         event.server.general_channel.send_message "There are a total of six people online. Perfect for a Company of Heroes match on The Sheldt!\n(#{online_user_names})"
