@@ -306,7 +306,7 @@ module Utilities
   end
 
   message(start_with: /[\#!~]/) do |event|
-    command_name = event.message.content.scan(/^\#(.*?)(\s+|$)/i)[0][0]
+    command_name = event.message.content.scan(/^\#([^\s]+)/i)[0][0]
     if !valid_command?(command_name)
       event.send_message "#{event.user.mention} that command does not exist."
     end
