@@ -315,6 +315,7 @@ end
 
 module AudioClips
   extend Discordrb::EventContainer
+  cattr_accessor :audio_clip_map
 
   def self.scan_files()
     Hash[ Dir.glob('./content/audioclips/**/*').select{ |e| File.file? e }.map{ |e| [File.basename(e, ".*"), e] } ]
@@ -375,6 +376,7 @@ end
 
 module Memes
   extend Discordrb::EventContainer
+  cattr_accessor :memes
 
   def self.scan_files()
     YAML.load_file("./content/memes.yml")
