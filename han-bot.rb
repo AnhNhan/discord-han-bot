@@ -277,6 +277,7 @@ module AudioClips
   @@audio_clip_map = self.scan_files()
 
   message(start_with: /\#/) do |event|
+    # audio clip not found error handled by memes
     clipname = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0].downcase
     clip_exists = @@audio_clip_map.has_key? clipname
     if event && event.user.voice_channel && clip_exists
@@ -324,6 +325,38 @@ module AudioClips
   message(content: "#audio-continue") do |event|
     event.bot.voice.continue
     event.respond "Command received. Playback should continue within a few seconds."
+  end
+end
+
+module Memes
+  extend Discordrb::EventContainer
+
+  def self.scan_files()
+    YAML.load_file("./content/memes.yml")
+  end
+
+  @@memes = self.scan_files()
+
+  message(start_with: /\#/) do |event|
+    meme_name = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0].downcase
+    meme_exists = @@memes.has_key? meme_name
+    if meme_exists
+      meme = @@memes[meme_name]
+      if meme.has_key? "comment"
+        event.respond "_" + meme["comment"].to_s + "_"
+      end
+      event.respond meme["img-url"]
+    else
+      # Also handles errors for audio clips
+      event.respond "#{event.user.mention} I'm sorry, you tried to access a content asset named \##{meme_name}, but it does not exist."
+    end
+  end
+
+  message(content: "#meme-reload") do |event|
+    old_length = @@memes.keys.length
+    @@memes = self.scan_files()
+    new_length = @@memes.keys.length
+    event.respond "Done! Found #{new_length} files. Δ of #{new_length - old_length}."
   end
 end
 
@@ -388,6 +421,7 @@ bot.include! AnnouncePossibleGames
 bot.include! Pokedex
 bot.include! Utilities
 bot.include! AudioClips
+bot.include! Memes
 bot.include! HelpText
 
 bot.run
