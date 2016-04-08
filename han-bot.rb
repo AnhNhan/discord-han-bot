@@ -99,7 +99,7 @@ module AnnouncePossibleGames
   presence do |event|
     if event.server
       #TODO: Support other bot recognition. Username-based, anyone?
-      online_users = event.server.users.select{ |u| !u.bot? && u.status.eql?(:online) }
+      online_users = event.server.users.select{ |u| !u.bot_account? && u.status.eql?(:online) }
       if online_users.length == 6
         online_user_names = online_users.map(&:name).join ", "
         event.server.general_channel.send_message "There are a total of six people online. Perfect for a Company of Heroes match on The Sheldt!\n(#{online_user_names})"
@@ -329,17 +329,17 @@ module AudioClips
     if event && event.user.voice_channel && clip_exists
       channel = event.user.voice_channel
       if channel != event.bot.bot_user.voice_channel
-        event.bot.voice_connect(channel)
-        event.bot.voice.volume = 0.4
-        event.bot.voice.adjust_average = false
-        event.bot.voice.length_override = Discordrb::Voice::IDEAL_LENGTH - 6.5
+        event.bot.voice_connect(channel, event.server)
+        event.voice.volume = 0.4
+        event.voice.adjust_average = false
+        event.voice.length_override = Discordrb::Voice::IDEAL_LENGTH - 6.5
       end
-      event.bot.voice.play_io open(@@audio_clip_map[clipname])
+      event.voice.play_io open(@@audio_clip_map[clipname])
     else
       if event && clip_exists
         if event.bot.voice # just play in the current channel
           event.user.pm "You currently don't seem to be in a voice channel, but I'm doing the courtesy nonetheless, just to annoy the other people. Playing _#{event.message.content}_!"
-          event.bot.voice.play_io open(@@audio_clip_map[clipname])
+          event.voice.play_io open(@@audio_clip_map[clipname])
         else # no channal found
           event.respond "#{event.user.mention} I'm sorry, you tried to play _#{clipname}_ but I could not find your current voice channel.\n_If you are already situated in one, please try re-joining, I'm not sure where the problem is exactly._\n_Or I just don't have access to your current channel._"
         end
@@ -447,14 +447,19 @@ if !File.exists?(localconf_filename)
   puts "Local config file not found - empty config file '#{localconf_filename}' will be created"
   puts "Please add configuration and try again"
   config_file = File.open(localconf_filename, "w")
-  config_file.puts "username: test@gmail.com\npassword: hunter2\n"
+  config_file.puts "username: test@gmail.com\npassword: hunter2\nwolfram:\n  appip: appid-here\ntoken: ''\nappid: 0\n"
   config_file.close
   exit false
 end
 
 localconf = YAML::load(File.read(localconf_filename))
 
-bot = Discordrb::Bot.new localconf["username"], localconf["password"]
+if localconf["token"] && localconf["token"].length && localconf["appid"] != 0
+  bot = Discordrb::Bot.new token: localconf["token"], application_id: localconf["appid"]
+else
+  bot = Discordrb::Bot.new localconf["username"], localconf["password"]
+  bot = Discordrb::Bot.new email: localconf["username"], password: localconf["password"]
+end
 
 bot.message(with_text: /^\W*ping\W*$/i) do |event|
   event.respond "Pong!"
@@ -470,6 +475,7 @@ bot.include! AudioClips
 bot.include! Memes
 bot.include! HelpText
 
+# register modules for command validation
 $_valid_command_callbacks.push lambda { |str| AudioClips.audio_clip_map.has_key?(str) }
 $_valid_command_callbacks.push lambda { |str| Memes.memes.has_key?(str) }
 
