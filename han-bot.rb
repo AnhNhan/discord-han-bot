@@ -454,11 +454,14 @@ end
 
 localconf = YAML::load(File.read(localconf_filename))
 
+bot = nil
 if localconf["token"] && localconf["token"].length && localconf["appid"] != 0
   bot = Discordrb::Bot.new token: localconf["token"], application_id: localconf["appid"]
-else
-  bot = Discordrb::Bot.new localconf["username"], localconf["password"]
+elsif localconf["username"].length != 0 && localconf["password"].length != 0
   bot = Discordrb::Bot.new email: localconf["username"], password: localconf["password"]
+else
+  puts "No authentication info, checj localconf.yml."
+  exit false
 end
 
 bot.message(with_text: /^\W*ping\W*$/i) do |event|
