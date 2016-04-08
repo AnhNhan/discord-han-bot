@@ -327,22 +327,23 @@ module AudioClips
     clipname = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0].downcase
     clip_exists = @@audio_clip_map.has_key? clipname
     if event && event.user.voice_channel && clip_exists
-      channel = event.user.voice_channel
-      if channel != event.bot.bot_user.voice_channel
-        event.bot.voice_connect(channel, event.server)
-        event.voice.volume = 0.4
-        event.voice.adjust_average = false
-        event.voice.length_override = Discordrb::Voice::IDEAL_LENGTH - 6.5
+      user_channel = event.user.voice_channel
+      voice = nil
+      if user_channel != event.voice
+        voice = event.bot.voice_connect user_channel
+        voice.volume = 0.4
+        voice.adjust_average = false
+        voice.length_override = Discordrb::Voice::IDEAL_LENGTH - 6.5
+      elsif event.voice
+        voice = event.voice
+      else
+        event.respond "#{event.user.mention} I'm sorry, there was an application error. Please contact my creator and tell him what happened."
+        raise "Voice application error here. Probably wrong API usage."
       end
-      event.voice.play_io open(@@audio_clip_map[clipname])
+      voice.play_io open(@@audio_clip_map[clipname])
     else
       if event && clip_exists
-        if event.voice # just play in the current channel
-          event.user.pm "You currently don't seem to be in a voice channel, but I'm doing the courtesy nonetheless, just to annoy the other people. Playing _#{event.message.content}_!"
-          event.voice.play_io open(@@audio_clip_map[clipname])
-        else # no channal found
-          event.respond "#{event.user.mention} I'm sorry, you tried to play _#{clipname}_ but I could not find your current voice channel.\n_If you are already situated in one, please try re-joining, I'm not sure where the problem is exactly._\n_Or I just don't have access to your current channel._"
-        end
+        event.respond "#{event.user.mention} I'm sorry, you tried to play _#{clipname}_ but I could not find your current voice channel.\n_If you are already situated in one, please try re-joining, I'm not sure where the problem is exactly._\n_Or I just don't have access to your current channel._"
       end
     end
   end
