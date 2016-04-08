@@ -328,14 +328,14 @@ module AudioClips
     clip_exists = @@audio_clip_map.has_key? clipname
     if event && event.user.voice_channel && clip_exists
       user_channel = event.user.voice_channel
-      voice = nil
-      if user_channel != event.voice
+      voice = event.bot.voice user_channel
+      if !voice
         voice = event.bot.voice_connect user_channel
         voice.volume = 0.4
         voice.adjust_average = false
         voice.length_override = Discordrb::Voice::IDEAL_LENGTH - 6.5
-      elsif event.voice
-        voice = event.voice
+      # elsif event.voice
+      #   voice = event.voice
       else
         event.respond "#{event.user.mention} I'm sorry, there was an application error. Please contact my creator and tell him what happened."
         raise "Voice application error here. Probably wrong API usage."
