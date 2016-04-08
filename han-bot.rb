@@ -337,7 +337,7 @@ module AudioClips
       event.voice.play_io open(@@audio_clip_map[clipname])
     else
       if event && clip_exists
-        if event.bot.voice # just play in the current channel
+        if event.voice # just play in the current channel
           event.user.pm "You currently don't seem to be in a voice channel, but I'm doing the courtesy nonetheless, just to annoy the other people. Playing _#{event.message.content}_!"
           event.voice.play_io open(@@audio_clip_map[clipname])
         else # no channal found
