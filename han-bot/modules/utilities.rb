@@ -176,7 +176,7 @@ module HanBot::Modules::Utilities
       event.respond "***#{corrected_command}***"
       channel.start_typing
       sleep 0.250
-      event.respond "_(whooooosh)_"
+      event.respond "_(whooooosh)_\n"
       channel.start_typing
       sleep 0.500
 
