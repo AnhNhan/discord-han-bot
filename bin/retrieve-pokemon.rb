@@ -1,6 +1,11 @@
+
+$LOAD_PATH << (File.dirname(__FILE__) + "/../han-bot/")
+
 require 'json'
 require 'uri'
 require 'net/http'
+
+require 'han-bot'
 
 locale_suffix = {
   2 => "de",
@@ -47,7 +52,7 @@ end
 
 puts "Processing done, found #{pokemon_list_entries.length} Pokemon, writing to pokemon-list.json"
 
-File.open("pokemon-list.json", "w") do |file|
+File.open(HanBot.path("pokemon-list.json"), "w") do |file|
   file.write pokemon_list_entries.to_json
   puts "Writing successful"
   puts "** DONE **"

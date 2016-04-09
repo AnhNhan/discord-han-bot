@@ -7,7 +7,7 @@ module HanBot::Modules::Memes
   cattr_accessor :memes
 
   def self.scan_files()
-    YAML.load_file("./content/memes.yml")
+    YAML.load_file(HanBot.path("content/memes.yml"))
   end
 
   @@memes = self.scan_files()

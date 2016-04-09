@@ -9,7 +9,7 @@ module HanBot::Modules::AudioClips
 
   # scans for audio files in the content directory
   def self.scan_files()
-    Hash[ Dir.glob('./content/audioclips/**/*').select{ |e| File.file? e }.map{ |e| [File.basename(e, ".*"), e] } ]
+    Hash[ Dir.glob(HanBot.path('content/audioclips/**/*')).select{ |e| File.file? e }.map{ |e| [File.basename(e, ".*"), e] } ]
   end
 
   @@audio_clip_map = self.scan_files()

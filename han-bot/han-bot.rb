@@ -2,7 +2,9 @@
 module HanBot
   cattr_accessor :localconf_filename
 
-  @@localconf_filename = "localconf.yml"
+  @@project_root = File.dirname(__FILE__) + "/../"
+
+  @@localconf_filename = @@project_root + "localconf.yml"
   @@_global_commands = [
     "help",
     "pokedex",
@@ -23,13 +25,17 @@ module HanBot
 
   @@_valid_command_callbacks = []
 
+  def HanBot.path(path = "")
+    @@project_root + path
+  end
+
   def HanBot.add_valid_command_callback(&cb)
     @@_valid_command_callbacks.push cb
   end
 
   def HanBot.valid_command?(str)
     str = str.downcase.strip
-    HanBot._global_commands.include?(str) || @@_valid_command_callbacks.map{ |cb| cb.call(str) }.any?
+    @@_global_commands.include?(str) || @@_valid_command_callbacks.map{ |cb| cb.call(str) }.any?
   end
 
   def HanBot.current_voice_channel(user, bot)

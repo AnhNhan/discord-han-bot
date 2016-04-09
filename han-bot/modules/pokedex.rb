@@ -8,7 +8,7 @@ require 'levenshtein'
 module HanBot::Modules::Pokedex
   extend Discordrb::EventContainer
 
-  @@pokedex = JSON.parse(File.read("pokemon-list.json"))
+  @@pokedex = JSON.parse(File.read(HanBot.path("pokemon-list.json")))
   @@name_search_indexes = [ "name_de", "name_en", "name_fr", "name_jp", "name_jpr", "name_kr", "name_krr" ]
 
   # searches through the pokedex for an entry with a possibly matching name
