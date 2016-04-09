@@ -35,6 +35,13 @@ def valid_command?(str)
   $_global_commands.include?(str) || $_valid_command_callbacks.map{ |cb| cb.call(str) }.any?
 end
 
+def current_voice_channel(user, bot)
+  bot.servers.each do |server|
+    member = user.on server
+    return member.voice_channel if member.voice_channel
+  end
+end
+
 ###########################################################
 #### MODULES
 ###########################################################
@@ -326,8 +333,8 @@ module AudioClips
   message(start_with: /\#/) do |event|
     clipname = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0].downcase
     clip_exists = @@audio_clip_map.has_key? clipname
-    if event && event.user.voice_channel && clip_exists
-      user_channel = event.user.voice_channel
+    user_channel = current_voice_channel event.user, event.bot
+    if event && event.channel && user_channel && clip_exists
       voice = event.bot.voice user_channel
       if !voice
         voice = event.bot.voice_connect user_channel
@@ -341,10 +348,8 @@ module AudioClips
         raise "Voice application error here. Probably wrong API usage."
       end
       voice.play_io open(@@audio_clip_map[clipname])
-    else
-      if event && clip_exists
-        event.respond "#{event.user.mention} I'm sorry, you tried to play _#{clipname}_ but I could not find your current voice channel.\n_If you are already situated in one, please try re-joining, I'm not sure where the problem is exactly._\n_Or I just don't have access to your current channel._"
-      end
+    elsif event && clip_exists
+      event.respond "#{event.user.mention} I'm sorry, you tried to play _#{clipname}_ but I could not find your current voice channel.\n_If you are already situated in one, please try re-joining, I'm not sure where the problem is exactly._\n_Or I just don't have access to your current channel._"
     end
   end
 
