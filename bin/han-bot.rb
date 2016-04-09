@@ -1,7 +1,12 @@
 
 $LOAD_PATH << (File.dirname(__FILE__) + "/../han-bot/")
 
-::RBNACL_LIBSODIUM_GEM_LIB_PATH = File.dirname(__FILE__) + "/libsodium.dll"
+begin
+  require 'rbnacl/libsodium'
+rescue LoadError
+  ::RBNACL_LIBSODIUM_GEM_LIB_PATH = File.dirname(__FILE__) + "/libsodium.dll"
+end
+
 require 'discordrb'
 require 'yaml'
 
