@@ -8,7 +8,11 @@ require 'levenshtein'
 module HanBot::Modules::Pokedex
   extend Discordrb::EventContainer
 
-  @@pokedex = JSON.parse(File.read(HanBot.path("pokemon-list.json")))
+  def self.load()
+    JSON.parse(File.read(HanBot.path("pokemon-list.json")))
+  end
+
+  @pokedex = self.load()
   @@name_search_indexes = [ "name_de", "name_en", "name_fr", "name_jp", "name_jpr", "name_kr", "name_krr" ]
 
   # searches through the pokedex for an entry with a possibly matching name
@@ -21,7 +25,7 @@ module HanBot::Modules::Pokedex
       # this is necessary since the user might input too many zeroes
       query = query.gsub /^\#?0+/, ""
       query = query.rjust(3, "0")
-      return @@pokedex.find{ |entry| query.eql? entry["id"] }
+      return @pokedex.find{ |entry| query.eql? entry["id"] }
     else
       # search by name
       # slighty fuzzy search, not too fast, not too precise, pokemon with similar name may be mistaken
@@ -29,7 +33,7 @@ module HanBot::Modules::Pokedex
       #puts "current query: #{query}"
       return nil if !query
 
-      result = @@pokedex.find do |entry|
+      result = @pokedex.find do |entry|
         entryname = entry["name_de"]
         #puts "at entry: #{entryname}"
         @@name_search_indexes.find do |index|
@@ -69,6 +73,13 @@ module HanBot::Modules::Pokedex
     end
   end
 
+  message(content: "#pokedex-reload") do |event|
+    old_length = @pokedex.length
+    @pokedex = self.load()
+    new_length = @pokedex.length
+    event.respond "Done! Found #{new_length} Pokémon. Δ of #{new_length - old_length}."
+  end
+
   # compiles the entry's various names into a short presentable list
   def self.foreignnames(entry, indexes, separator = ", ", prefix = " (", suffix= ")")
     snippets = Array.new
@@ -86,6 +97,7 @@ module HanBot::Modules::Pokedex
   end
 
   register_command "pokedex"
+  register_command "pokedex-reload"
 
   help_text(
     "**Pokédex**\n" +
