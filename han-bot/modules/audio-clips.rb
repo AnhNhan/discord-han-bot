@@ -71,4 +71,14 @@ module HanBot::Modules::AudioClips
     event.bot.voice(current_voice_channel(event.user, event.bot)).continue
     event.respond "Command received. Playback should continue within a few seconds."
   end
+
+  help_text     "**Audio Clips**\n" +
+    "  _#audio-list_\n" +
+    "    lists all audio clip names"
+    "  _#audio-stop_\n" +
+    "    Stops the current playback. Note that there are playback- and netword-related delays, so give it a few seconds.\n" +
+    "  _#audio-pause_\n" +
+    "    Pauses the current playback. Note that there are playback- and netword-related delays, so give it a few seconds.\n" +
+    "  _#audio-continue_\n" +
+    "    Continues the current playback. Note that there are playback- and netword-related delays, so give it a few seconds.\n"
 end

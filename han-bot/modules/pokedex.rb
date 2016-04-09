@@ -84,4 +84,12 @@ module HanBot::Modules::Pokedex
       ""
     end
   end
+
+  help_text(
+    "**Pokédex**\n" +
+    "  _#pokedex <search term>_\n" +
+    "    _<search term>_: Either the number of the Pokémon in the National-Dex, or its name in any of the following languages:\n" +
+    "                           German, English, French, Japanese, Korean (the last two also in its romanized variants).\n" +
+    "                           @HanBot will do its best to find you the appropriate entry and send you a quick summary of the Pokémon in question, with further information available on the PokéWiki.\n"
+  )
 end

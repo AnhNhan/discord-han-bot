@@ -48,15 +48,15 @@ bot.message(with_text: /^\W*ping\W*$/i) do |event|
   event.respond "Pong!"
 end
 
-bot.include! HanBot::Modules::GeneralAnnouncer
-bot.include! HanBot::Modules::FutileResponses
-# bot.include! HanBot::Modules::GreetTheCommander
-bot.include! HanBot::Modules::AnnouncePossibleGames
-bot.include! HanBot::Modules::Pokedex
-bot.include! HanBot::Modules::Utilities
-bot.include! HanBot::Modules::AudioClips
-bot.include! HanBot::Modules::Memes
-bot.include! HanBot::Modules::HelpText
+bot.hanbot_include! HanBot::Modules::GeneralAnnouncer
+bot.hanbot_include! HanBot::Modules::FutileResponses
+# bot.hanbot_include! HanBot::Modules::GreetTheCommander
+bot.hanbot_include! HanBot::Modules::AnnouncePossibleGames
+bot.hanbot_include! HanBot::Modules::Pokedex
+bot.hanbot_include! HanBot::Modules::Utilities
+bot.hanbot_include! HanBot::Modules::AudioClips
+bot.hanbot_include! HanBot::Modules::Memes
+bot.hanbot_include! HanBot::Modules::HelpText
 
 # register modules for command validation
 HanBot.add_valid_command_callback { |str| HanBot::Modules::AudioClips.audio_clip_map.has_key?(str) }

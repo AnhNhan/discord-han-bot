@@ -4,6 +4,58 @@ require 'net/http'
 require 'uri'
 require 'json'
 
+module HanBot::Modules::ExtendedEventContainer
+  @help_text = ""
+  @help_texts = []
+
+  def help_text(text = nil)
+    if text
+      @help_text = text
+    else
+      @help_text
+    end
+  end
+
+  def help_texts()
+    @help_texts.join
+  end
+
+  def clear_help_text()
+    @help_text = ""
+  end
+
+  def clear_help_texts()
+    @help_texts = []
+  end
+
+  def hanbot_include!(container)
+    include! container
+
+    help_text = container.instance_variable_get :@help_text
+    if help_text && help_text.length > 0
+      @help_texts.push help_text
+    end
+  end
+end
+
+# Monkey-patch
+module Discordrb::EventContainer
+  include HanBot::Modules::ExtendedEventContainer
+end
+class Discordrb::Bot
+  include HanBot::Modules::ExtendedEventContainer
+  old_initialize = instance_method(:initialize)
+
+  define_method(:initialize) do |email: nil, password: nil, log_mode: :normal,
+      token: nil, application_id: nil,
+      type: nil, name: '', fancy_log: false, suppress_ready: false, parse_self: false|
+    @help_text = ""
+    @help_texts = []
+
+    old_initialize.bind(self).(email: email, password: password, log_mode: log_mode, token: token, application_id: application_id, type: type, name: name, fancy_log: fancy_log, suppress_ready: suppress_ready, parse_self: parse_self)
+  end
+end
+
 module HanBot::Modules::GeneralAnnouncer
   extend Discordrb::EventContainer
 
@@ -14,6 +66,9 @@ module HanBot::Modules::GeneralAnnouncer
   member_leave do |event|
     event.server.general_channel.send_message "#{event.user.mention} left the server. He better had a reason to."
   end
+
+  help_text "**Game Announcer**\n" +
+    "  @HanBot can announce possible games that can be played. Favorably when there are six people, then @HanBot will gladly suggest a round of Company of Heroes.\n"
 end
 
 module HanBot::Modules::FutileResponses
