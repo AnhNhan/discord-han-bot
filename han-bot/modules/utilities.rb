@@ -171,7 +171,7 @@ module HanBot::Modules::Utilities
       suggestion = suggestions.first
       # compared to above this has some added characters since it may be only a missing space between the command name and the parameters
       command_name = invalid_command.scan(/^[\#!~]([^\s\d+]+)/i)[0][0]
-      corrected_command = invalid_command.gsub(/(?<=[\#!~])#{command_name}\s*/, suggestion + " ")
+      corrected_command = invalid_command.gsub(/(?<=[\#!~])#{command_name}\s*/, suggestion + " ").strip
 
       event.respond "***#{corrected_command}***"
       channel.start_typing
