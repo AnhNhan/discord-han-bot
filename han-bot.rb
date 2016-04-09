@@ -374,17 +374,17 @@ module AudioClips
   end
 
   message(content: "#audio-stop") do |event|
-    event.bot.voice.stop_playing
+    event.bot.voice(current_voice_channel(event.user, event.bot)).stop_playing
     event.respond "Command received. Playback should stop within a few seconds."
   end
 
   message(content: "#audio-pause") do |event|
-    event.bot.voice.pause
+    event.bot.voice(current_voice_channel(event.user, event.bot)).pause
     event.respond "Command received. Playback should pause within a few seconds."
   end
 
   message(content: "#audio-continue") do |event|
-    event.bot.voice.continue
+    event.bot.voice(current_voice_channel(event.user, event.bot)).continue
     event.respond "Command received. Playback should continue within a few seconds."
   end
 end
