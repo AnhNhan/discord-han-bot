@@ -1,4 +1,4 @@
-require 'rbnacl/libsodium'
+::RBNACL_LIBSODIUM_GEM_LIB_PATH = "./libsodium.dll"
 require 'discordrb'
 require 'yaml'
 require 'net/http'
