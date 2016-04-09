@@ -37,9 +37,10 @@ end
 
 def current_voice_channel(user, bot)
   bot.servers.each do |server|
-    member = user.on server
+    member = user.on server[1]
     return member.voice_channel if member.voice_channel
   end
+  nil
 end
 
 ###########################################################
