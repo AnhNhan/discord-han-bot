@@ -337,6 +337,11 @@ module AudioClips
     user_channel = current_voice_channel event.user, event.bot
     if event && event.channel && user_channel && clip_exists
       voice = event.bot.voice user_channel
+      if voice && voice != user_channel
+        # already connected on the server, but not in this channel
+        # just reset voice to connect to the proper channel
+        voice = nil
+      end
       if !voice
         voice = event.bot.voice_connect user_channel
         voice.volume = 0.4
