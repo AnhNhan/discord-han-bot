@@ -475,7 +475,7 @@ if localconf["token"] && localconf["token"].length && localconf["appid"] != 0
 elsif localconf["username"].length != 0 && localconf["password"].length != 0
   bot = Discordrb::Bot.new email: localconf["username"], password: localconf["password"]
 else
-  puts "No authentication info, checj localconf.yml."
+  puts "No authentication info, check localconf.yml."
   exit false
 end
 
