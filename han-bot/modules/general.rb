@@ -140,7 +140,7 @@ module HanBot::Modules::FutileResponses
     event.respond self.pick_random_response(event)
   end
 
-  pm(start_with: not!(/[\#!~]/)) do |event|
+  pm(start_with: not!(/[\#!~]|fuck|shit|verdammt|scheiße/i)) do |event|
     event.respond self.pick_random_response(event)
   end
 end

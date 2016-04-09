@@ -2,6 +2,7 @@
 require 'discordrb'
 
 require 'han-bot'
+require 'han-lib'
 
 module HanBot::Modules::Utilities
   extend Discordrb::EventContainer
@@ -130,6 +131,8 @@ module HanBot::Modules::Utilities
     event.respond "I have been running for exactly **#{uptime.strip}**, and counting!"
   end
 
+  @cream_trace = {}
+
   # generic error message to notify the user of a command written wrong.
   # TODO: give suggestions for what may have been correct.
   message(start_with: /[\#!~]/) do |event|
@@ -144,7 +147,59 @@ module HanBot::Modules::Utilities
       if !alternatives.empty?
         event.send_message "Did you mean:\n" + alternatives.map{ |s| "  - \##{s}\n" }.join
       end
+      (@cream_trace ||= {})[conversation_id(event.user, event.channel)] = [
+        event.message.content,
+        alternatives
+      ]
     end
+  end
+
+  message(content: /^[\#!~]?(fuck|shit|scheiße|verdammt)\W*$/i) do |event|
+    bot = event.bot
+    channel = event.channel
+    user = event.user
+
+    cid = conversation_id user, channel
+    invalid_command, suggestions = @cream_trace[cid]
+    suggestions ||= [] # normalize to empty array if invalid
+    invalid_command = nil if "".eql? invalid_command # normalize to nil for simple conditional handling
+
+    if invalid_command && suggestions.length == 1
+      event.respond "#{event.user.mention} ok fine, you win. I will just assume that was the British spelling for what you wanted."
+      channel.start_typing
+
+      suggestion = suggestions.first
+      # compared to above this has some added characters since it may be only a missing space between the command name and the parameters
+      command_name = invalid_command.scan(/^[\#!~]([^\s\d+]+)/i)[0][0]
+      corrected_command = invalid_command.gsub(/(?<=[\#!~])#{command_name}\s*/, suggestion + " ")
+
+      event.respond "***#{corrected_command}***"
+      channel.start_typing
+      sleep 0.250
+      event.respond "_(whooooosh)_"
+      channel.start_typing
+      sleep 0.500
+
+      message_data = {
+        "id" => (Time.now.to_f * 1000 + Discordrb::DISCORD_EPOCH).to_i << 22,
+        "content" => corrected_command,
+        "bot" => bot,
+        "author" => {"id" => user.id},
+        "channel_id" => channel.id
+      }
+      message = Discordrb::Message.new message_data, bot
+      message_event = Discordrb::Events::MessageEvent.new message, bot
+
+      event.bot.send :raise_event, message_event
+    elsif invalid_command && suggestions.length > 1
+      event.respond "#{event.user.mention} sucks to be you. Too many choices for mighty _HanBot_!"
+    elsif invalid_command && suggestions.length == 0
+      event.respond "#{event.user.mention} excuse me please?"
+    else
+      event.respond "#{event.user.mention} muckst du dich? Hm? _Hm!?_ ***Hm!??***"
+    end
+
+    @cream_trace.delete cid
   end
 
   register_command "flipcoin"
@@ -153,6 +208,11 @@ module HanBot::Modules::Utilities
   register_command "prune-channel"
   register_command "git-pull"
   register_command "uptime"
+
+  register_command "fuck"
+  register_command "shit"
+  register_command "scheiße"
+  register_command "verdammt"
 
   help_text "**Utilities**\n" +
     "  _#flipcoin [<head-label> [<tail-label> [coin-butt-label]]]_\n" +
