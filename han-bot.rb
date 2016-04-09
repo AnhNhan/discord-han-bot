@@ -37,7 +37,7 @@ end
 
 def current_voice_channel(user, bot)
   bot.servers.each do |server|
-    member = user.on server[1]
+    member = user.on server[1] # for some reason I get [id, server] tuples in the server symbol
     return member.voice_channel if member.voice_channel
   end
   nil
@@ -122,6 +122,8 @@ module Pokedex
   @@pokedex = JSON.parse(File.read("pokemon-list.json"))
   @@name_search_indexes = [ "name_de", "name_en", "name_fr", "name_jp", "name_jpr", "name_kr", "name_krr" ]
 
+  # searches through the pokedex for an entry with a possibly matching name
+  # note that the current heuristics is to traverse the pokedex entries matching the names exactly, and if no match has been found, traverse it again with broader constraints
   def self.search_pokemon(query, current_level = 0, max_level = 3)
     if query =~ /^\d+$/
       # search by id
@@ -178,7 +180,8 @@ module Pokedex
     end
   end
 
-  def self.foreignnames(entry, indexes)
+  # compiles the entry's various names into a short presentable list
+  def self.foreignnames(entry, indexes, separator = ", ", prefix = " (", suffix= ")")
     snippets = Array.new
     indexes.each do |index|
       name = entry[index]
@@ -187,7 +190,7 @@ module Pokedex
       snippets.push lang + ".: " + name
     end
     if snippets.length > 0
-      " (" + snippets.join(", ") + ")"
+      prefix + snippets.join(separator) + suffix
     else
       ""
     end
@@ -217,12 +220,18 @@ module Utilities
     "***Sy*ste*m malfu*nct*ion. Pl*ease t*rqy aqqqgain.***"
   ]
 
+  # builds a coin presentation phrase, where the announced coin result is the given value
   def self.coin_phrase(val)
     @@coin_phrases.sample.gsub /@@@@/, val.to_s
   end
 
+  # gives you every single fucking rolled dice
   def self.dice_rolls(num_dices, dice_eyecount)
     (1..num_dices).map{ |i| [ i, (1..dice_eyecount).to_a.sample ] }
+  end
+
+  ready do |event|
+    event.bot.game = "with this one itself"
   end
 
   message(start_with: /\#flipcoin/i) do |event|
@@ -285,6 +294,7 @@ module Utilities
     event.respond "#{mentions} bend over bitch and accept your punishment\nhttps://cdn.discordapp.com/attachments/107942652275601408/107945087350079488/TuHGJ.gif"
   end
 
+  # invoke this command if you want to e.g. add new audio clips or memes, but don't want to restart the bot. for now, you also have to invoke e.g. #audio-load manually afterwards.
   message(content: "#git-pull") do |event|
     event.respond "Done.\n#{`git pull`}"
   end
@@ -296,23 +306,26 @@ module Utilities
         channel = event.channel
         history = channel.history delete_count
         while history.length > 0
-            channel.prune delete_count
-            sleep 0.2
+          channel.prune delete_count
+          sleep 0.2
         end
       rescue Exception
-        event.respond "#{event.user.mention} something seems to have gone wrong. A possible cause is that #{event.bot.bot_user.mention} does not have the appropriate permission to accomplish this action. Please contact its creator."
+        event.respond "#{event.user.mention} something seems to have gone wrong. A possible cause is that #{event.bot.bot_user.mention} does not have the appropriate permission to accomplish this action. Please contact this one's creator."
       end
     else
       event.respond "#{event.user.mention} you do not have permission to complete this command."
     end
   end
 
+  # tells everybody how long the bot has been running. also tells everybody when I last restarted the bot.
   message(content: "#uptime") do |event|
     pid = Process.pid
     uptime = `ps -p #{pid} -o etime=`
     event.respond "I have been running for exactly **#{uptime.strip}**, and counting!"
   end
 
+  # generic error message to notify the user of a command written wrong.
+  # TODO: give suggestions for what may have been correct.
   message(start_with: /[\#!~]/) do |event|
     command_name = event.message.content.scan(/^\#([^\s]+)/i)[0][0]
     if !valid_command?(command_name)
@@ -325,6 +338,7 @@ module AudioClips
   extend Discordrb::EventContainer
   cattr_accessor :audio_clip_map
 
+  # scans for audio files in the content directory
   def self.scan_files()
     Hash[ Dir.glob('./content/audioclips/**/*').select{ |e| File.file? e }.map{ |e| [File.basename(e, ".*"), e] } ]
   end
