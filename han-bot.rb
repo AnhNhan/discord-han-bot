@@ -358,7 +358,7 @@ module AudioClips
 
       voice.play_io open(@@audio_clip_map[clipname])
     elsif event && clip_exists
-      event.respond "#{event.user.mention} I'm sorry, you tried to play _#{clipname}_ but I could not find your current voice channel.\n_If you are already situated in one, please try re-joining, I'm not sure where the problem is exactly._\n_Or I just don't have access to your current channel._"
+      event.respond "#{event.user.mention} I'm sorry, you tried to play _#{clipname}_ but I could not find your current voice channel.\n_Or I just don't have access to your current channel. Always a possibility._"
     end
   end
 
