@@ -363,7 +363,7 @@ module AudioClips
   end
 
   message(content: "#audio-list") do |event|
-    event.send_message @@audio_clip_map.keys.sort.reverse!.reverse!.map{ |k| "#" + k }.join("\n")
+    event.send_message @@audio_clip_map.keys.sort.reverse!.reverse!.join("\n")
   end
 
   message(content: "#audio-reload") do |event|
