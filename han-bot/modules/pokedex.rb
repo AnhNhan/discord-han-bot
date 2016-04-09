@@ -85,6 +85,8 @@ module HanBot::Modules::Pokedex
     end
   end
 
+  register_command "pokedex"
+
   help_text(
     "**Pokédex**\n" +
     "  _#pokedex <search term>_\n" +

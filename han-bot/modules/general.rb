@@ -3,10 +3,16 @@ require 'discordrb'
 require 'net/http'
 require 'uri'
 require 'json'
+require 'levenshtein'
 
+# Monkey Patch Basis
 module HanBot::Modules::ExtendedEventContainer
   @help_text = ""
   @help_texts = []
+
+  @registered_commands = []
+  @valid_command_callbacks = []
+  @valid_command_list_callbacks = []
 
   def help_text(text = nil)
     if text
@@ -28,12 +34,48 @@ module HanBot::Modules::ExtendedEventContainer
     @help_texts = []
   end
 
+  def register_command(command)
+    (@registered_commands ||= [])  << command
+  end
+
+  def add_valid_command_callback(&cb)
+    (@valid_command_callbacks ||= [])  << cb
+  end
+
+  def add_valid_command_list_callback(&cb)
+    (@valid_command_list_callbacks ||= [])  << cb
+  end
+
+  def valid_command?(command)
+    command = command.downcase.strip
+    (@registered_commands || []).include?(command) || (@valid_command_callbacks || []).map{ |cb| cb.call(command) }.any?
+  end
+
+  def all_valid_commands()
+    (@registered_commands || []) + (@valid_command_list_callbacks || []).map{ |cb| cb.call() }.flatten
+  end
+
   def hanbot_include!(container)
     include! container
 
     help_text = container.instance_variable_get :@help_text
     if help_text && help_text.length > 0
       @help_texts.push help_text
+    end
+
+    registered_commands = container.instance_variable_get :@registered_commands
+    if registered_commands && registered_commands.length > 0
+      @registered_commands += registered_commands
+    end
+
+    valid_command_callbacks = container.instance_variable_get :@valid_command_callbacks
+    if valid_command_callbacks && valid_command_callbacks.length > 0
+      @valid_command_callbacks += valid_command_callbacks
+    end
+
+    valid_command_list_callbacks = container.instance_variable_get :@valid_command_list_callbacks
+    if valid_command_list_callbacks && valid_command_list_callbacks.length > 0
+      @valid_command_list_callbacks += valid_command_list_callbacks
     end
   end
 end
@@ -44,6 +86,8 @@ module Discordrb::EventContainer
 end
 class Discordrb::Bot
   include HanBot::Modules::ExtendedEventContainer
+
+  # additional monkey patch because this is a class and class instance attributes have to be initialized in the constructor
   old_initialize = instance_method(:initialize)
 
   define_method(:initialize) do |email: nil, password: nil, log_mode: :normal,
@@ -51,6 +95,9 @@ class Discordrb::Bot
       type: nil, name: '', fancy_log: false, suppress_ready: false, parse_self: false|
     @help_text = ""
     @help_texts = []
+    @registered_commands = []
+    @valid_command_callbacks = []
+    @valid_command_list_callbacks = []
 
     old_initialize.bind(self).(email: email, password: password, log_mode: log_mode, token: token, application_id: application_id, type: type, name: name, fancy_log: fancy_log, suppress_ready: suppress_ready, parse_self: parse_self)
   end

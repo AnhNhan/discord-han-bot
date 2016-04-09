@@ -9,4 +9,6 @@ module HanBot::Modules::HelpText
     text += event.bot.help_texts
     event.send_message text
   end
+
+  register_command "help"
 end

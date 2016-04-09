@@ -58,8 +58,4 @@ bot.hanbot_include! HanBot::Modules::AudioClips
 bot.hanbot_include! HanBot::Modules::Memes
 bot.hanbot_include! HanBot::Modules::HelpText
 
-# register modules for command validation
-HanBot.add_valid_command_callback { |str| HanBot::Modules::AudioClips.audio_clip_map.has_key?(str) }
-HanBot.add_valid_command_callback { |str| HanBot::Modules::Memes.memes.has_key?(str) }
-
 bot.run

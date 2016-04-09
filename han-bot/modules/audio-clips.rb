@@ -12,11 +12,11 @@ module HanBot::Modules::AudioClips
     Hash[ Dir.glob(HanBot.path('content/audioclips/**/*')).select{ |e| File.file? e }.map{ |e| [File.basename(e, ".*"), e] } ]
   end
 
-  @@audio_clip_map = self.scan_files()
+  @audio_clip_map = self.scan_files()
 
   message(start_with: /\#/) do |event|
     clipname = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0].downcase
-    clip_exists = @@audio_clip_map.has_key? clipname
+    clip_exists = @audio_clip_map.has_key? clipname
     user_channel = HanBot.current_voice_channel event.user, event.bot
     if event && event.channel && user_channel && clip_exists
       voice = event.bot.voice user_channel
@@ -40,20 +40,20 @@ module HanBot::Modules::AudioClips
         raise "Voice application error here. Probably wrong API usage."
       end
 
-      voice.play_io open(@@audio_clip_map[clipname])
+      voice.play_io open(@audio_clip_map[clipname])
     elsif event && clip_exists
       event.respond "#{event.user.mention} I'm sorry, you tried to play _#{clipname}_ but I could not find your current voice channel.\n_Or I just don't have access to your current channel. Always a possibility._"
     end
   end
 
   message(content: "#audio-list") do |event|
-    event.send_message @@audio_clip_map.keys.sort.reverse!.reverse!.join("\n")
+    event.send_message @audio_clip_map.keys.sort.reverse!.reverse!.join("\n")
   end
 
   message(content: "#audio-reload") do |event|
-    old_length = @@audio_clip_map.keys.length
-    @@audio_clip_map = self.scan_files()
-    new_length = @@audio_clip_map.keys.length
+    old_length = @audio_clip_map.keys.length
+    @audio_clip_map = self.scan_files()
+    new_length = @audio_clip_map.keys.length
     event.respond "Done! Found #{new_length} files. Δ of #{new_length - old_length}."
   end
 
@@ -71,6 +71,16 @@ module HanBot::Modules::AudioClips
     event.bot.voice(current_voice_channel(event.user, event.bot)).continue
     event.respond "Command received. Playback should continue within a few seconds."
   end
+
+  register_command "audio-list"
+  register_command "audio-reload"
+  register_command "audio-stop"
+  register_command "audio-pause"
+  register_command "audio-continue"
+
+  add_valid_command_callback { |str| @audio_clip_map.has_key?(str) }
+
+  add_valid_command_list_callback { || @audio_clip_map.keys }
 
   help_text     "**Audio Clips**\n" +
     "  _#audio-list_\n" +

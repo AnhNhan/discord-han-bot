@@ -134,10 +134,25 @@ module HanBot::Modules::Utilities
   # TODO: give suggestions for what may have been correct.
   message(start_with: /[\#!~]/) do |event|
     command_name = event.message.content.scan(/^\#([^\s]+)/i)[0][0]
-    if !HanBot.valid_command?(command_name)
+    if !event.bot.valid_command?(command_name)
       event.send_message "#{event.user.mention} that command does not exist."
+      alternatives = event.bot.all_valid_commands.select do |command|
+        target = [command.length, command_name.length].max / 3.0
+        distance = Levenshtein.distance command_name, command
+        distance < target
+      end
+      if !alternatives.empty?
+        event.send_message "Did you mean:\n" + alternatives.map{ |s| "  - \##{s}\n" }.join
+      end
     end
   end
+
+  register_command "flipcoin"
+  register_command "roll"
+  register_command "spank"
+  register_command "prune-channel"
+  register_command "git-pull"
+  register_command "uptime"
 
   help_text "**Utilities**\n" +
     "  _#flipcoin [<head-label> [<tail-label> [coin-butt-label]]]_\n" +
