@@ -344,10 +344,13 @@ module AudioClips
         voice.length_override = Discordrb::Voice::IDEAL_LENGTH - 6.5
       # elsif event.voice
       #   voice = event.voice
-      else
+      end
+
+      if !voice # still no voice
         event.respond "#{event.user.mention} I'm sorry, there was an application error. Please contact my creator and tell him what happened."
         raise "Voice application error here. Probably wrong API usage."
       end
+
       voice.play_io open(@@audio_clip_map[clipname])
     elsif event && clip_exists
       event.respond "#{event.user.mention} I'm sorry, you tried to play _#{clipname}_ but I could not find your current voice channel.\n_If you are already situated in one, please try re-joining, I'm not sure where the problem is exactly._\n_Or I just don't have access to your current channel._"
