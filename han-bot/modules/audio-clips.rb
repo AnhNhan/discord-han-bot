@@ -47,7 +47,7 @@ module HanBot::Modules::AudioClips
   end
 
   message(content: "#audio-list") do |event|
-    event.send_message @audio_clip_map.keys.sort.reverse!.reverse!.join("\n")
+    event.channel.split_send @audio_clip_map.keys.sort.reverse!.reverse!.join("\n")
   end
 
   message(content: "#audio-reload") do |event|

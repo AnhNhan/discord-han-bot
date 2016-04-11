@@ -103,7 +103,7 @@ module HanBot::Modules::Utilities
 
   # invoke this command if you want to e.g. add new audio clips or memes, but don't want to restart the bot. for now, you also have to invoke e.g. #audio-load manually afterwards.
   message(content: "#git-pull") do |event|
-    event.respond "Done.\n#{`cd #{HanBot.path} && git pull`}"
+    event.channel.split_send "Done.\n#{`cd #{HanBot.path} && git pull`}"
   end
 
   message(content: "#prune-channel") do |event|

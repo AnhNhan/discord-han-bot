@@ -25,7 +25,7 @@ module HanBot::Modules::Memes
   end
 
   message(content: "#meme-list") do |event|
-    event.send_message @memes.keys.sort.reverse!.reverse!.map{ |k| "#" + k }.join("\n")
+    event.channel.split_send @memes.keys.sort.reverse!.reverse!.map{ |k| "#" + k }.join("\n")
   end
 
   message(content: "#meme-reload") do |event|
