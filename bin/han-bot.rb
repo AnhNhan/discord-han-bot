@@ -19,7 +19,7 @@ require 'modules/memes'
 require 'modules/pokedex'
 require 'modules/utilities'
 require 'modules/help'
-require 'modules/invote-bot'
+require 'modules/invite-bot'
 
 ###########################################################
 #### MAIN
