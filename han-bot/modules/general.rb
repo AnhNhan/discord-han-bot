@@ -14,6 +14,20 @@ module HanBot::Modules::ExtendedEventContainer
   @valid_command_callbacks = []
   @valid_command_list_callbacks = []
 
+  @@creator_discriminator = "6895"
+
+  def is_creator?(user)
+    user.discriminator.eql? @@creator_discriminator
+  end
+
+  def only_creator(user, &cb)
+    if is_creator? user
+      cb.call
+    else
+      event.respond "#{user.mention} you do not have permission to complete this command."
+    end
+  end
+
   def help_text(text = nil)
     if text
       @help_text = text
