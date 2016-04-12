@@ -19,6 +19,7 @@ require 'modules/memes'
 require 'modules/pokedex'
 require 'modules/utilities'
 require 'modules/help'
+require 'modules/invote-bot'
 
 ###########################################################
 #### MAIN
@@ -67,5 +68,6 @@ bot.hanbot_include! HanBot::Modules::Utilities
 bot.hanbot_include! HanBot::Modules::AudioClips
 bot.hanbot_include! HanBot::Modules::Memes
 bot.hanbot_include! HanBot::Modules::HelpText
+bot.hanbot_include! HanBot::Modules::InviteBot
 
 bot.run
