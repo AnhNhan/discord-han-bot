@@ -8,6 +8,7 @@ rescue LoadError
 end
 
 require 'discordrb'
+require 'slop'
 require 'yaml'
 
 
@@ -23,6 +24,14 @@ require 'modules/help'
 #### MAIN
 ###########################################################
 
+opts = Slop.parse do |o|
+  o.bool "-d", "--debug", "enable debug logging via Discordrb::Logger"
+  o.on "--version", "print the version" do
+    puts Slop::VERSION
+    exit
+  end
+end
+
 if !File.exists?(HanBot.localconf_filename)
   puts "Local config file not found - empty config file '#{HanBot.localconf_filename}' will be created"
   puts "Please add configuration and try again"
@@ -33,12 +42,13 @@ if !File.exists?(HanBot.localconf_filename)
 end
 
 localconf = YAML::load(File.read(HanBot.localconf_filename))
+log_mode = if opts[:debug] then :debug else :normal end
 
 bot = nil
 if localconf["token"] && localconf["token"].length && localconf["appid"] != 0
-  bot = Discordrb::Bot.new token: localconf["token"], application_id: localconf["appid"]
+  bot = Discordrb::Bot.new token: localconf["token"], application_id: localconf["appid"], log_mode: log_mode
 elsif localconf["username"].length != 0 && localconf["password"].length != 0
-  bot = Discordrb::Bot.new email: localconf["username"], password: localconf["password"]
+  bot = Discordrb::Bot.new email: localconf["username"], password: localconf["password"], log_mode: log_mode
 else
   puts "No authentication info, check localconf.yml."
   exit false
