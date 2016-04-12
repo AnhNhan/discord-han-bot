@@ -15,9 +15,33 @@ module HanBot::Modules::AudioClips
   @audio_clip_map = self.scan_files()
 
   message(start_with: /\#/) do |event|
-    clipname = event.message.content.scan(/^\#(.*?)\s*$/i)[0][0].downcase
+    match = event.message.content.scan(/^\#(.*?)(?:\s+([^\s]+))?\s*$/i)[0]
+    clipname = match[0].downcase
     clip_exists = @audio_clip_map.has_key? clipname
-    user_channel = HanBot.current_voice_channel event.user, event.bot
+
+    server_name = nil
+    if event.channel.private? && match[1]
+      server_name = match[1]
+      server_name_dc = server_name.downcase
+      server = event.bot.servers.values.find{ |server| server.name.downcase.eql? server_name_dc }
+
+      if server && event.bot.voice(server)
+        voice_bot = event.bot.voice server
+        user_channel = voice_bot.instance_variable_get :@channel
+      elsif server
+        event.respond "#{event.user.mention} sorry, but I'm currently not talking on '_#{server_name}_'."
+        break
+      else
+        event.respond "#{event.user.mention} sorry, but I could not find the server '_#{server_name}_'."
+        break
+      end
+    elsif match[1]
+      event.respond "#{event.user.mention} sorry, but server-specific play commands must be sent over private messages to reduce littering on channels _(and to maintain discretion :smiling_imp:)_."
+      break
+    else
+      user_channel = HanBot.current_voice_channel event.user, event.bot
+    end
+
     if event && event.channel && user_channel && clip_exists
       voice = event.bot.voice user_channel
       if voice && voice != user_channel
@@ -27,7 +51,7 @@ module HanBot::Modules::AudioClips
       end
       if !voice
         voice = event.bot.voice_connect user_channel
-        voice.volume = 0.4
+        voice.filter_volume = 0.4
         voice.adjust_average = false
         voice.length_override = Discordrb::Voice::IDEAL_LENGTH - 6.5
       # don't use existing voice bot - it may be in the wrong channel
