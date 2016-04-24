@@ -70,8 +70,16 @@ module HanBot::Modules::Utilities
     (1..num_dices).map{ |i| [ i, (1..dice_eyecount).to_a.sample ] }
   end
 
+  def self.change_game(bot)
+    bot.game = @@games.sample
+  end
+
   ready do |event|
-    event.bot.game = @@games.sample
+    self.change_game event.bot
+  end
+
+  message(content: "#change-game")  do |event|
+    self.change_game event.bot
   end
 
   message(start_with: /\#flipcoin/i) do |event|
@@ -255,6 +263,7 @@ module HanBot::Modules::Utilities
   end
 
   register_command "flipcoin"
+  register_command "change-game"
   register_command "roll"
   register_command "spank"
   register_command "prune-channel"
