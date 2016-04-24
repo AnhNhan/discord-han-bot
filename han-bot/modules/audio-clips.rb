@@ -15,8 +15,14 @@ module HanBot::Modules::AudioClips
   @audio_clip_map = self.scan_files()
 
   message(start_with: /\#/) do |event|
-    match = event.message.content.scan(/^\#(.*?)(?:\s+([^\s]+))?\s*$/i)[0]
+    match = event.message.content.scan(/^\#([^\s]+)(?:\s+([^\s]+))?\s*$/i)[0]
+    if !match
+      next
+    end
     clipname = match[0].downcase
+    if event.bot.valid_command?(clipname)
+      next
+    end
     clip_exists = @audio_clip_map.has_key? clipname
 
     server_name = nil
@@ -30,14 +36,14 @@ module HanBot::Modules::AudioClips
         user_channel = voice_bot.instance_variable_get :@channel
       elsif server
         event.respond "#{event.user.mention} sorry, but I'm currently not talking on '_#{server_name}_'."
-        break
+        next
       else
         event.respond "#{event.user.mention} sorry, but I could not find the server '_#{server_name}_'."
-        break
+        next
       end
     elsif match[1]
       event.respond "#{event.user.mention} sorry, but server-specific play commands must be sent over private messages to reduce littering on channels _(and to maintain discretion :smiling_imp:)_."
-      break
+      next
     else
       user_channel = HanBot.current_voice_channel event.user, event.bot
     end
