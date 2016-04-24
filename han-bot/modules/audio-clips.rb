@@ -53,7 +53,7 @@ module HanBot::Modules::AudioClips
         voice = event.bot.voice_connect user_channel
         voice.filter_volume = 0.4
         voice.adjust_average = false
-        voice.length_override = Discordrb::Voice::IDEAL_LENGTH - 6.5
+        voice.length_override = Discordrb::Voice::IDEAL_LENGTH - 5
       # don't use existing voice bot - it may be in the wrong channel
       # elsif event.voice
       #   voice = event.voice
