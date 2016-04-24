@@ -27,6 +27,39 @@ module HanBot::Modules::Utilities
     "***Sy*ste*m malfu*nct*ion. Pl*ease t*rqy aqqqgain.***"
   ]
 
+  @@games = [
+    "Factorio",
+    "Factorio",
+    "Factorio",
+    "Factorio",
+    "Factorio",
+    "Factorio",
+    "Factorio",
+    "Factorio",
+    "Factorio",
+    "Factorio",
+    "Factorio",
+    "World of Tanks",
+    "World of Tanks",
+    "World of Tanks",
+    "World of Tanks",
+    "Dark Souls III",
+    "World of Warcraft",
+    "Sins of a Solar Empire",
+    "Gothic II (No Cheat Run)",
+    "Battlefleet Gothic",
+    "Age of Empires II",
+    "Street Fighter Arcade Deluxe Ultimate Ultra Ω Z",
+    "Diablo III",
+    "Tom Clancy's The Division",
+    "Tom Clancy's Ghost Recon Advanced Warfighter",
+    "Tom Clancy's Splinter Cell",
+    "Hearthstone - Heroes of Warcraft",
+    "Warcraft III",
+    "DotA 2",
+    "Minecraft"
+  ]
+
   # builds a coin presentation phrase, where the announced coin result is the given value
   def self.coin_phrase(val)
     @@coin_phrases.sample.gsub /@@@@/, val.to_s
@@ -38,7 +71,7 @@ module HanBot::Modules::Utilities
   end
 
   ready do |event|
-    event.bot.game = "with this one itself"
+    event.bot.game = @@games.sample
   end
 
   message(start_with: /\#flipcoin/i) do |event|
