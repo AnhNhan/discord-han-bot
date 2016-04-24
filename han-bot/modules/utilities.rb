@@ -107,7 +107,7 @@ module HanBot::Modules::Utilities
   end
 
   message(content: "#prune-channel") do |event|
-    if event.user.tag.eql? "6895"
+    only_creator(event.user) {
       begin
         delete_count = 20
         channel = event.channel
@@ -119,9 +119,7 @@ module HanBot::Modules::Utilities
       rescue Exception
         event.respond "#{event.user.mention} something seems to have gone wrong. A possible cause is that #{event.bot.bot_user.mention} does not have the appropriate permission to accomplish this action. Please contact this one's creator."
       end
-    else
-      event.respond "#{event.user.mention} you do not have permission to complete this command."
-    end
+    }
   end
 
   # tells everybody how long the bot has been running. also tells everybody when I last restarted the bot.
@@ -129,6 +127,27 @@ module HanBot::Modules::Utilities
     pid = Process.pid
     uptime = `ps -p #{pid} -o etime=`
     event.respond "I have been running for exactly **#{uptime.strip}**, and counting!"
+  end
+
+  @@last_logger_mode = nil
+
+  # switches debug mode
+  message(content: "#switch-debug-mode") do |event|
+    only_creator(event.user) {
+      if @@last_logger_mode == nil
+        @@last_logger_mode = event.bot.mode
+      end
+      case event.bot.mode
+        when :debug
+          event.bot.mode = @@last_logger_mode
+          @@last_logger_mode = nil
+          event.send_message "Switched to *#{@@last_logger_mode}*."
+        else
+          @@last_logger_mode = event.bot.mode
+          event.bot.mode = :debug
+          event.send_message "Switched to *debug*."
+        end
+    }
   end
 
   @cream_trace = {}
@@ -208,6 +227,7 @@ module HanBot::Modules::Utilities
   register_command "prune-channel"
   register_command "git-pull"
   register_command "uptime"
+  register_command "switch-debug-mode"
 
   register_command "fuck"
   register_command "shit"
