@@ -62,7 +62,7 @@ end
 bot.hanbot_include! HanBot::Modules::GeneralAnnouncer
 bot.hanbot_include! HanBot::Modules::FutileResponses
 # bot.hanbot_include! HanBot::Modules::GreetTheCommander
-bot.hanbot_include! HanBot::Modules::AnnouncePossibleGames
+# bot.hanbot_include! HanBot::Modules::AnnouncePossibleGames
 bot.hanbot_include! HanBot::Modules::Pokedex
 bot.hanbot_include! HanBot::Modules::Utilities
 bot.hanbot_include! HanBot::Modules::AudioClips
