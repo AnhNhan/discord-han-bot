@@ -80,6 +80,12 @@ module HanBot::Modules::Pokedex
     event.respond "Done! Found #{new_length} Pokémon. Δ of #{new_length - old_length}."
   end
 
+  message(content: "#pokedex-fetch") do |event|
+    result = `ruby #{HanBot.path()}bin/retrieve-pokemon.rb`
+    event.send_message result
+    event.send_message "Done."
+  end
+
   # compiles the entry's various names into a short presentable list
   def self.foreignnames(entry, indexes, separator = ", ", prefix = " (", suffix= ")")
     snippets = Array.new
@@ -98,6 +104,7 @@ module HanBot::Modules::Pokedex
 
   register_command "pokedex"
   register_command "pokedex-reload"
+  register_command "pokedex-fetch"
 
   help_text(
     "**Pokédex**\n" +
