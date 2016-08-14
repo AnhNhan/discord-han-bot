@@ -62,7 +62,7 @@ module HanBot::Modules::Utilities
 
   # builds a coin presentation phrase, where the announced coin result is the given value
   def self.coin_phrase(val)
-    @@coin_phrases.sample.gsub /@@@@/, val.to_s
+    @@coin_phrases.sample.gsub(/@@@@/, val.to_s)
   end
 
   # gives you every single fucking rolled dice
@@ -98,7 +98,7 @@ module HanBot::Modules::Utilities
         upper_bound = args.to_i
         event.respond self.coin_phrase((1..upper_bound).to_a.sample)
       else
-        scan = args.scan /^(\d+)?[dw](\d+)(?:\s*\+\s*(\d+))?$/i
+        scan = args.scan(/^(\d+)?[dw](\d+)(?:\s*\+\s*(\d+))?$/i)
         if scan.length == 0
           event.respond "Invalid roll value of '#{scan}'."
           break
@@ -187,7 +187,7 @@ module HanBot::Modules::Utilities
           @@last_logger_mode = event.bot.mode
           event.bot.mode = :debug
           event.send_message "Switched to *debug*."
-        end
+      end
     }
   end
 
@@ -214,7 +214,7 @@ module HanBot::Modules::Utilities
     end
   end
 
-  message(content: /^[\#!~]?(fuck|shit|scheiße|verdammt)\W*$/i) do |event|
+  message(content: /^[\#!~]?(fuck|shit|scheiße|verdammt|damn)\W*$/i) do |event|
     bot = event.bot
     channel = event.channel
     user = event.user
