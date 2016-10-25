@@ -37,7 +37,7 @@ if !File.exists?(HanBot.localconf_filename)
   puts "Local config file not found - empty config file '#{HanBot.localconf_filename}' will be created"
   puts "Please add configuration and try again"
   config_file = File.open(HanBot.localconf_filename, "w")
-  config_file.puts "username: test@gmail.com\npassword: hunter2\nwolfram:\n  appip: appid-here\ntoken: ''\nappid: 0\n"
+  config_file.puts "token: ''\nappid: 0\n"
   config_file.close
   exit false
 end
