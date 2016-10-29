@@ -37,7 +37,7 @@ if !File.exists?(HanBot.localconf_filename)
   puts "Local config file not found - empty config file '#{HanBot.localconf_filename}' will be created"
   puts "Please add configuration and try again"
   config_file = File.open(HanBot.localconf_filename, "w")
-  config_file.puts "username: test@gmail.com\npassword: hunter2\nwolfram:\n  appip: appid-here\ntoken: ''\nappid: 0\n"
+  config_file.puts "token: ''\nappid: 0\n"
   config_file.close
   exit false
 end
@@ -47,9 +47,7 @@ log_mode = if opts[:debug] then :debug else :normal end
 
 bot = nil
 if localconf["token"] && localconf["token"].length && localconf["appid"] != 0
-  bot = Discordrb::Bot.new token: localconf["token"], application_id: localconf["appid"], log_mode: log_mode
-elsif localconf["username"].length != 0 && localconf["password"].length != 0
-  bot = Discordrb::Bot.new email: localconf["username"], password: localconf["password"], log_mode: log_mode
+  bot = Discordrb::Bot.new token: localconf["token"], client_id: localconf["appid"], log_mode: log_mode
 else
   puts "No authentication info, check localconf.yml."
   exit false

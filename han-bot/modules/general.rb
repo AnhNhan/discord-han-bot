@@ -104,8 +104,8 @@ class Discordrb::Bot
   # additional monkey patch because this is a class and class instance attributes have to be initialized in the constructor
   old_initialize = instance_method(:initialize)
 
-  define_method(:initialize) do |email: nil, password: nil, log_mode: :normal,
-      token: nil, application_id: nil,
+  define_method(:initialize) do |log_mode: :normal,
+      token: nil, client_id: nil,
       type: nil, name: '', fancy_log: false, suppress_ready: false, parse_self: false|
     @help_text = ""
     @help_texts = []
@@ -113,7 +113,7 @@ class Discordrb::Bot
     @valid_command_callbacks = []
     @valid_command_list_callbacks = []
 
-    old_initialize.bind(self).(email: email, password: password, log_mode: log_mode, token: token, application_id: application_id, type: type, name: name, fancy_log: fancy_log, suppress_ready: suppress_ready, parse_self: parse_self)
+    old_initialize.bind(self).(log_mode: log_mode, token: token, client_id: client_id, type: type, name: name, fancy_log: fancy_log, suppress_ready: suppress_ready, parse_self: parse_self)
   end
 end
 
