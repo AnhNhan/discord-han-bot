@@ -48,7 +48,7 @@ module HanBot::Modules::Utilities
     "Assetto Corsa",
     "Project Cars",
     "Elite Dangerous",
-    "Star Citizen '18'"
+    "Star Citizen '18'",
     "Half Life 3",
     "Total War: Shogun II",
     "Total War: WARHAMMER",
@@ -57,7 +57,7 @@ module HanBot::Modules::Utilities
     "Grey Goo",
     "Borderlands",
     "Borderlands 2",
-    "Borderlangs: The Pre-Sequel"
+    "Borderlangs: The Pre-Sequel",
     "Minecraft"
   ]
 
