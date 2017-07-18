@@ -29,19 +29,6 @@ module HanBot::Modules::Utilities
 
   @@games = [
     "Factorio",
-    "Factorio",
-    "Factorio",
-    "Factorio",
-    "Factorio",
-    "Factorio",
-    "Factorio",
-    "Factorio",
-    "Factorio",
-    "Factorio",
-    "Factorio",
-    "World of Tanks",
-    "World of Tanks",
-    "World of Tanks",
     "World of Tanks",
     "Dark Souls III",
     "World of Warcraft",
@@ -57,6 +44,20 @@ module HanBot::Modules::Utilities
     "Hearthstone - Heroes of Warcraft",
     "Warcraft III",
     "DotA 2",
+    "Pokémon Go!",
+    "Assetto Corsa",
+    "Project Cars",
+    "Elite Dangerous",
+    "Star Citizen '18'"
+    "Half Life 3",
+    "Total War: Shogun II",
+    "Total War: WARHAMMER",
+    "The Elder Scrolls V: Skyrim Special Edition",
+    "FEZ",
+    "Grey Goo",
+    "Borderlands",
+    "Borderlands 2",
+    "Borderlangs: The Pre-Sequel"
     "Minecraft"
   ]
 
@@ -159,6 +160,16 @@ module HanBot::Modules::Utilities
         end
       rescue Exception
         event.respond "#{event.user.mention} something seems to have gone wrong. A possible cause is that #{event.bot.bot_user.mention} does not have the appropriate permission to accomplish this action. Please contact this one's creator."
+      end
+    }
+  end
+
+  message(start_with: "#copy-channel") do |event|
+    only_creator(event.user) {
+      channelname = event.content.scan(/#copy-channel #?([^\s]+)/i)[0]
+      puts channelname
+      if !channelname
+        next
       end
     }
   end
@@ -270,6 +281,7 @@ module HanBot::Modules::Utilities
   register_command "git-pull"
   register_command "uptime"
   register_command "switch-debug-mode"
+  register_command "copy-channel"
 
   register_command "fuck"
   register_command "shit"
