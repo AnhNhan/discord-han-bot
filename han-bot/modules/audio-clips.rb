@@ -42,7 +42,7 @@ module HanBot::Modules::AudioClips
         next
       end
     elsif match[1]
-      event.respond "#{event.user.mention} sorry, but server-specific play commands must be sent over private messages to reduce littering on channels _(and to maintain discretion :smiling_imp:)_."
+      # event.respond "#{event.user.mention} sorry, but server-specific play commands must be sent over private messages to reduce littering on channels _(and to maintain discretion :smiling_imp:)_."
       next
     else
       user_channel = HanBot.current_voice_channel event.user, event.bot
