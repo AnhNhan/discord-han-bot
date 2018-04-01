@@ -207,7 +207,7 @@ module HanBot::Modules::Utilities
   # generic error message to notify the user of a command written wrong.
   # TODO: give suggestions for what may have been correct.
   message(start_with: /[\#!~]/) do |event|
-    command_name = event.message.content.scan(/^\#([^\s]+)/i)[0][0]
+    command_name = event.message.content.scan(/^[\#!~]([^\s]+)/i)[0][0]
     if !event.bot.valid_command?(command_name)
       event.send_message "#{event.user.mention} that command does not exist."
       alternatives = event.bot.all_valid_commands.select do |command|
