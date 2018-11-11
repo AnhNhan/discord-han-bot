@@ -1,13 +1,16 @@
 
 module HanBot
-  cattr_accessor :localconf_filename
 
   @@project_root = File.dirname(__FILE__) + "/../"
 
-  @@localconf_filename = @@project_root + "localconf.yml"
+  @_localconf_filename = @@project_root + "localconf.yml"
 
   def HanBot.path(path = "")
     @@project_root + path
+  end
+
+  def HanBot.localconf_filename()
+    @_localconf_filename
   end
 
   def HanBot.current_voice_channel(user, bot)

@@ -14,12 +14,8 @@ require 'yaml'
 
 require 'han-bot'
 require 'modules/general'
-require 'modules/audio-clips'
-require 'modules/memes'
-require 'modules/pokedex'
 require 'modules/utilities'
 require 'modules/help'
-require 'modules/invite-bot'
 
 ###########################################################
 #### MAIN
@@ -59,13 +55,7 @@ end
 
 bot.hanbot_include! HanBot::Modules::GeneralAnnouncer
 bot.hanbot_include! HanBot::Modules::FutileResponses
-# bot.hanbot_include! HanBot::Modules::GreetTheCommander
-# bot.hanbot_include! HanBot::Modules::AnnouncePossibleGames
-bot.hanbot_include! HanBot::Modules::Pokedex
 bot.hanbot_include! HanBot::Modules::Utilities
-bot.hanbot_include! HanBot::Modules::AudioClips
-bot.hanbot_include! HanBot::Modules::Memes
 bot.hanbot_include! HanBot::Modules::HelpText
-bot.hanbot_include! HanBot::Modules::InviteBot
 
 bot.run

@@ -138,16 +138,6 @@ module HanBot::Modules::Utilities
     end
   end
 
-  message(start_with: "#spank") do |event|
-    mentions = event.message.mentions.map(&:mention).join " "
-    event.respond "#{mentions} bend over bitch and accept your punishment\nhttps://cdn.discordapp.com/attachments/107942652275601408/107945087350079488/TuHGJ.gif"
-  end
-
-  # invoke this command if you want to e.g. add new audio clips or memes, but don't want to restart the bot. for now, you also have to invoke e.g. #audio-load manually afterwards.
-  message(content: "#git-pull") do |event|
-    event.channel.split_send "Done.\n#{`cd #{HanBot.path} && git pull`}"
-  end
-
   message(content: "#prune-channel") do |event|
     only_creator(event.user) {
       begin
